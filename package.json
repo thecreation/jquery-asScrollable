@@ -1,0 +1,40 @@
+{
+  "name": "jquery-asScrollable",
+  "title": "jQuery asScrollable",
+  "description": "a jquery plugin",
+  "version": "0.1.0",
+  "homepage": "https://github.com/amazingSurge/jquery-asScrollable",
+  "author": {
+    "name": "amazingSurge",
+    "email": "amazingSurge@yahoo.com",
+    "url": "amazingSurge.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amazingSurge/jquery-asScrollable.git"
+  },
+  "bugs": "https://github.com/amazingSurge/jquery-asScrollable/issues",
+  "licenses": [
+    {
+      "type": "GPL",
+      "url": "https://github.com/amazingSurge/jquery-asScrollable/blob/master/LICENSE-GPL"
+    }
+  ],
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "devDependencies": {
+    "grunt": "*",
+    "grunt-autoprefixer": "*",
+    "grunt-contrib-clean": "*",
+    "grunt-contrib-concat": "*",
+    "grunt-contrib-copy": "*",
+    "grunt-contrib-jshint": "*",
+    "grunt-contrib-less": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-jsbeautifier": "*",
+    "grunt-text-replace": "*",
+    "load-grunt-tasks": "*"
+  }
+}

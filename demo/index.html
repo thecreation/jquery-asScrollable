@@ -1,0 +1,147 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>jQuery asScrollable</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="css/normalize.css">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="../css/asScrollable.css">
+
+<style type="text/css">
+body {
+    background-color: #f7f7f7;
+}
+.section {
+	padding: 20px;
+}
+.inner {
+    margin: 0 auto;
+    max-width: 960px;
+}
+.example {
+    position: relative;
+    overflow: hidden;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    -webkit-box-shadow: 1px 1px 2px 0px rgba(200, 200, 200, 0.3);
+    -moz-box-shadow:    1px 1px 2px 0px rgba(200, 200, 200, 0.3);
+    box-shadow:         1px 1px 2px 0px rgba(200, 200, 200, 0.3);
+    background-color: #fefefe;
+}
+.content-200px-height {
+    height: 200px;
+}
+.content-300px-height {
+    height: 300px;
+}
+.content-500px-height {
+    height: 500px;
+}
+.content-1000px-height {
+    background-color: rgb(232,244,255);
+    height: 1000px;
+}
+</style>
+</head>
+<body>
+    <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <div class="section">
+    	<div class="inner">
+            <section>
+                <h3>Horizontal Scrollable</h3>
+                <div class="example">
+                    <div class="example-scrollable-horizontal">
+                        
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Horizontal Scrollable</h3>
+                <div class="example">
+                    <div class="example-scrollable-horizontal" data-options='{"contentSelector": ".content"}'>
+                        <div class="content">
+
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+<!-- 
+	        <section>
+                <h3>Vertical Scrollable</h3>
+                <div class="example">
+                    <div class="example-scrollable-vertical">
+                        
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Both Scrollable</h3>
+                <div class="example">
+                    <div class="example-scrollable-both">
+                        
+                    </div>
+                </div>
+            </section> -->
+
+            <section>
+                <div>
+                    <button class="api-move-to" data-to="0">Move to 0</button>
+                    <button class="api-move-to" data-to="50">Move to 50</button>
+                    <button class="api-move-to" data-to="0%">Move to 0%</button>
+                    <button class="api-move-to" data-to="100%">Move to 100%</button>
+                    <button class="api-move-to" data-to="50%">Move to 50%</button>
+                </div>
+                <div>
+                    <button class="api-move-by" data-by="10">Move by 10</button>
+                    <button class="api-move-by" data-by="+10">Move by +10</button>
+                    <button class="api-move-by" data-by="-10">Move by -10</button>
+                    <button class="api-move-by" data-by="10%">Move by 10%</button>
+                    <button class="api-move-by" data-by="+10%">Move by +10%</button>
+                    <button class="api-move-by" data-by="-10%">Move by -10%</button>
+                </div>
+            </section>
+    	</div>
+    </div>
+    <script src="../libs/jquery.min.js"></script>
+    <script src="../libs/jquery.mousewheel.min.js"></script>
+    <script src="../libs/jquery.asScrollbar.js"></script>
+    <script src="../src/jquery.asScrollable.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function(){
+            $('.example-scrollable-horizontal').asScrollable({
+
+            });
+
+            // var api = $('.example-scrollable-horizontal').data('asScrollable');
+
+            // $('.api-move-to').on('click', function(){
+            //     var to = $(this).data('to');
+
+            //     $('.example-scrollable-horizontal, .example-scrollable-vertical').asScrollable('moveTo', to);
+            //     //api.moveTo(to);
+            // });
+
+            // $('.api-move-by').on('click', function(){
+            //     var to = $(this).data('by');
+            //     //api.moveBy(to);
+
+            //     $('.example-scrollable-horizontal, .example-scrollable-vertical').asScrollable('moveBy', to);
+            // });
+
+            // $('.example-scrollable-vertical').asScrollable({
+            //     direction: 'vertical',
+            //     handleLength: 100
+            // });
+        });
+    </script>
+</body>
+</html>

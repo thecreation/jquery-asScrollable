@@ -1,0 +1,17 @@
+{
+  "name": "jquery-asScrollable",
+  "version": "0.2.0",
+  "main": "dist/jquery-asScrollable.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": ">=2.1.1",
+    "jquery-wheel": "git@github.com:brandonaaron/jquery-mousewheel.git",
+    "jquery-asScrollbar": "git@github.com:amazingSurge/jquery-asScrollbar.git"
+  }
+}
