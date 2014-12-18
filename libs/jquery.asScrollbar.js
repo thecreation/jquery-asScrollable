@@ -1,7 +1,7 @@
 /*! jQuery Scrollbar - v0.2.0 - 2014-12-15
 * https://github.com/amazingSurge/jquery-asScrollbar
 * Copyright (c) 2014 amazingSurge; Licensed GPL */
-(function($, document, window, undefined) {
+(function(window, document, $, undefined) {
     "use strict";
 
     var pluginName = 'asScrollbar';
@@ -75,10 +75,12 @@
 
         options = this.options = $.extend({}, Plugin.defaults, options || {}, this.$bar.data('options') || {});
 
+        bar.direction = this.options.direction;
+
         this.classes = {
             directionClass: options.namespace + '-' + options.direction,
             barClass: options.barClass ? options.barClass : options.namespace,
-            handleClass: options.handleClass ? options.handleClass : options.namespace + '-handle',
+            handleClass: options.handleClass ? options.handleClass : options.namespace + '-handle'
         };
 
         if (this.options.direction === 'vertical') {
@@ -223,6 +225,7 @@
         barClass: null,
         handleClass: null,
         draggingClass: 'is-dragging',
+        hoveringClass: 'is-hovering',
 
         direction: 'vertical',
 
@@ -434,21 +437,29 @@
                 });
             }
 
+            this.$bar.on(this.eventName('mouseenter'), function(e) {
+                self.$bar.addClass(self.options.hoveringClass);
+                self.enter('hovering');
+                self.trigger('hover');
+            });
+
+            this.$bar.on(this.eventName('mouseleave'), function(e) {
+                self.$bar.removeClass(self.options.hoveringClass);
+
+                if (!self.is('hovering')) {
+                    return;
+                }
+                self.leave('hovering');
+                self.trigger('hovered');
+            });
+
             if (this.options.keyboard) {
-                this.$bar.on(this.eventName('mouseenter'), function(e) {
-                    self.enter('hovered');
-                });
-
-                this.$bar.on(this.eventName('mouseleave'), function(e) {
-                    self.leave('hovered');
-                });
-
                 $(document).on(this.eventName('keydown'), function(e) {
                     if (e.isDefaultPrevented && e.isDefaultPrevented()) {
                         return;
                     }
 
-                    if (!self.is('hovered')) {
+                    if (!self.is('hovering')) {
                         return;
                     }
                     var activeElement = document.activeElement;
@@ -692,8 +703,16 @@
         },
 
         updateLength: function() {
-            this.handleLength = this.$handle[0][this.attributes.clientLength];
-            this.barLength = this.$bar[0][this.attributes.clientLength];
+            this.handleLength = this.getHandleLenght();
+            this.barLength = this.getBarLength();
+        },
+
+        getBarLength: function(){
+            return this.$bar[0][this.attributes.clientLength];
+        },
+
+        getHandleLenght: function(){
+            return this.$handle[0][this.attributes.clientLength];
         },
 
         getHandlePosition: function() {
@@ -757,7 +776,7 @@
             }
         },
 
-        moveTo: function(value, trigger) {
+        moveTo: function(value, trigger, directly) {
             var type = typeof value;
 
             if (type === "string") {
@@ -773,10 +792,10 @@
                 return;
             }
 
-            this.move(value, trigger);
+            this.move(value, trigger, directly);
         },
 
-        moveBy: function(value, trigger) {
+        moveBy: function(value, trigger, directly) {
             var type = typeof value;
 
             if (type === "string") {
@@ -795,7 +814,7 @@
             this.move(this.handlePosition + value, trigger);
         },
 
-        move: function(value, trigger) {
+        move: function(value, trigger, directly) {
             if (typeof value !== "number") {
                 return;
             }
@@ -807,10 +826,10 @@
             }
 
             if (trigger) {
-                this.trigger(this.eventName('change'), [value / (this.barLength - this.handleLength)]);
+                this.trigger('change', value / (this.barLength - this.handleLength));
             }
 
-            if (!this.is('dragging')) {
+            if (!this.is('dragging') && directly !== true) {
                 this.doMove(value);
             } else {
                 this.setHandlePosition(value);
@@ -936,7 +955,4 @@
         }
         return this;
     };
-
-    console.dir($[pluginName]);
-
-})(jQuery, document, window, undefined);
+})(window, document, jQuery, undefined);

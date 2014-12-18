@@ -1,0 +1,53 @@
+.asScrollable-container::-webkit-scrollbar {
+  width: 0;
+}
+.asScrollable-bar {
+  -webkit-transition: opacity 1s;
+       -o-transition: opacity 1s;
+          transition: opacity 1s;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  line-height: 0;
+  overflow: hidden;
+  border-radius: 4px;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  border: 2px solid transparent;
+}
+.asScrollable-bar-hide {
+  -webkit-transition-delay: 400ms;
+       -o-transition-delay: 400ms;
+          transition-delay: 400ms;
+  opacity: 0;
+}
+.asScrollable-bar.is-dragging {
+  background: #eee;
+  border: none;
+}
+.asScrollable-bar-handle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  line-height: 0;
+  background: #cccccc;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.asScrollable-bar-vertical {
+  height: 100%;
+  width: 10px;
+  margin: 0 5px;
+}
+.asScrollable-bar-vertical .asScrollable-bar-handle {
+  width: 100%;
+}
+.asScrollable-bar-horizontal {
+  height: 10px;
+  margin: 5px 0;
+  width: 100%;
+}
+.asScrollable-bar-horizontal .asScrollable-bar-handle {
+  height: 100%;
+}

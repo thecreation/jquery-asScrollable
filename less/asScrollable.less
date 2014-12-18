@@ -1,0 +1,65 @@
+@scrollable: asScrollable;
+
+@scrollable-bar-size: 10px;
+@scrollable-bar-handle-color: #ccc;
+
+.@{scrollable} {
+
+	&-container::-webkit-scrollbar {
+		width:0;
+	}
+
+	&-bar {
+		transition: opacity 1s;
+		&-hide {
+			transition-delay: 400ms;
+			opacity: 0;
+		}
+
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		line-height: 0;
+		
+		overflow:hidden;
+		border-radius: (@scrollable-bar-size - 2px)/2;
+		box-sizing:border-box;
+		border: 2px solid transparent;
+
+		&.is-dragging {
+			background: #eee;
+			border: none;
+		}
+
+		&-handle {
+			position: absolute;
+			top: 0;
+			left: 0;
+			line-height: 0;
+			background: @scrollable-bar-handle-color;
+			cursor: pointer;
+
+			border-radius: @scrollable-bar-size/2px;
+		}
+
+		&-vertical {
+			height:100%;
+			width: @scrollable-bar-size;
+			margin: 0 5px;
+		}
+
+		&-vertical &-handle {
+			width: 100%;
+		}
+
+		&-horizontal {
+		    height: @scrollable-bar-size;
+		    margin: 5px 0;
+			width:100%;
+		}
+
+		&-horizontal &-handle { 
+			height: 100%; 
+		}
+	}
+}
