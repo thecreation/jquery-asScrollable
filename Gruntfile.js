@@ -23,9 +23,15 @@ module.exports = function(grunt) {
                 banner: '<%= banner %>',
                 stripBanners: true
             },
+
             dist: {
                 src: ['src/jquery.asScrollable.js'],
                 dest: 'dist/jquery.asScrollable.js',
+            },
+
+            all: {
+                src: ['libs/jquery.asScrollbar.js', 'src/jquery.asScrollable.js'],
+                dest: 'dist/jquery.asScrollable.all.js',
             }
         },
 
@@ -37,6 +43,10 @@ module.exports = function(grunt) {
             dist: {
                 src: '<%= concat.dist.dest %>',
                 dest: 'dist/jquery.asScrollable.min.js',
+            },
+            all: {
+                src: '<%= concat.all.dest %>',
+                dest: 'dist/jquery.asScrollable.all.min.js',
             }
         },
 
@@ -49,7 +59,9 @@ module.exports = function(grunt) {
                     cwd: 'bower_components/',
                     src: [
                         'jquery/dist/jquery.min.js',
-                        'jquery-wheel/jquery.mousewheel.min.js'
+                        'jquery-wheel/jquery.mousewheel.min.js',
+                        'jquery-asScrollbar/src/jquery.asScrollbar.js',
+                        'holderjs/holder.js'
                     ],
                     dest: 'libs/'
                 }]

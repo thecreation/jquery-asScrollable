@@ -1,501 +1,591 @@
-/*! jQuery asScrollable - v0.1.0 - 2014-12-15
+/*! jQuery asScrollable - v0.1.0 - 2014-12-23
 * https://github.com/amazingSurge/jquery-asScrollable
 * Copyright (c) 2014 amazingSurge; Licensed GPL */
-(function($, document, window, undefined) {
-     "use strict";
-
-     var pluginName = 'asScrollable';
-
-     var Plugin = $[pluginName] = function(options, container) {
-         var $container = this.$container = $(container);
-         options = this.options = $.extend({}, Plugin.defaults, options || {});
-
-         this.classes = {
-             contentClass: options.namespace + '-' + options.contentClass,
-             wrapperClass: options.namespace + '-' + options.wrapperClass,
-             barClass: options.namespace + '-' + options.barClass,
-             verticalBarClass: options.namespace + '-' + options.verticalBarClass,
-             horizontalBarClass: options.namespace + '-' + options.horizontalBarClass,
-             handleClass: options.namespace + '-' + options.handleClass,
-             directionClass: options.namespace + '-' + options.direction,
-             scrollableClass: options.namespace + '-' + options.scrollableClass,
-             scrollingClass: options.namespace + '-' + options.scrollingClass,
-             verticalScrollingClass: options.namespace + '-' + options.verticalBarClass + '-' + options.scrollingClass,
-             horizontalScrollingClass: options.namespace + '-' + options.horizontalBarClass + '-' + options.scrollingClass
-         };
-
-         this.oriAttr = {
-             'vertical': { //Vertical
-                 x: 'Y',
-                 pos: 'top',
-                 crossPos: 'left',
-                 size: 'height',
-                 crossSize: 'width',
-                 client: 'clientHeight',
-                 crossClient: 'clientWidth',
-                 offset: 'offsetHeight',
-                 crossOffset: 'offsetWidth',
-                 offsetPos: 'offsetTop',
-                 scroll: 'scrollTop',
-                 scrollSize: 'scrollHeight',
-                 overflow: 'overflow-y',
-                 pageOffset: 'pageYOffset',
-                 mouseAttr: 'pageY'
-             },
-             'horizontal': { // Horizontal
-                 x: 'X',
-                 pos: 'left',
-                 crossPos: 'top',
-                 size: 'width',
-                 crossSize: 'height',
-                 client: 'clientWidth',
-                 crossClient: 'clientHeight',
-                 offset: 'offsetWidth',
-                 crossOffset: 'offsetHeight',
-                 offsetPos: 'offsetLeft',
-                 scroll: 'scrollLeft',
-                 scrollSize: 'scrollWidth',
-                 overflow: 'overflow-x',
-                 pageOffset: 'pageXOffset',
-                 mouseAttr: 'pageX'
-             }
-         };
-
-         if (options.skin) {
-             this.classes.skinClass = options.namespace + '-' + options.skin;
-         }
-
-         var $content = this.$content = $container.find('.' + this.classes.contentClass);
-
-         if ($content.length === 0) {
-             $container.wrapInner('<div class="' + this.classes.contentClass + '"/>');
-             $content = this.$content = $container.find('.' + this.classes.contentClass);
-         }
-
-         var $wrapper = this.$wrapper = $container.find('.' + this.classes.wrapperClass);
-         if ($wrapper.length === 0) {
-             $content.wrap('<div class="' + this.classes.wrapperClass + '"/>');
-             $wrapper = this.$wrapper = $content.parents('.' + this.classes.wrapperClass);
-         }
-
-         $wrapper.css('overflow', 'hidden');
-
-         $container.css({
-             overflow: 'hidden',
-             position: 'relative'
-         });
-
-         if (options.skin) {
-             $container.addClass(this.classes.skinClass);
-         }
-
-         this.origPosition = 0;
-         this.origHanlePosition = 0;
-
-         if (options.direction === 'horizontal' || options.direction === 'vertical') {
-             this.initLayout(options.direction);
-         } else {
-             /*this.initLayout('vertical');*/
-             this.initLayout('horizontal');
-         }
-
-         this.initEvent();
-     };
-
-     Plugin.defaults = {
-         contentClass: 'content',
-         wrapperClass: 'wrapper',
-         barClass: 'scrollbar',
-         verticalBarClass: 'vertical',
-         horizontalBarClass: 'horizontal',
-         scrollableClass: 'is-scrollable',
-         scrollingClass: 'is_scrolling',
-         barTmpl: '<div class="{{scrollbar}}"><div class="{{handle}}"></div></div>',
-         handleClass: 'handle',
-         direction: 'vertical', //if it's 0, scroll orientation is 'horizontal',else scroll orientation is 'vertical', will add auto.
-         namespace: 'asScrollable',
-         mousewheel: 10,
-         duration: 500,
-         skin: false,
-         responsive: false,
-         showOnhover: false,
-         toOffset: 50
-     };
-
-     Plugin.prototype = {
-         constructor: Plugin,
-         initLayout: function(direction) {
-             if (typeof direction === 'undefined') {
-                 if (this.options.direction === 'horizontal' && this.options.direction === 'vertical') {
-                     this.initLayout(this.options.direction);
-                 } else {
-                     this.initLayout('vertical');
-                     this.initLayout('horizontal');
-                 }
-                 return;
-             }
-             var $wrapper = this.$wrapper,
-                 wrapper = $wrapper[0],
-                 $container = this.$container,
-                 oriAttr = this.oriAttr[direction];
-
-
-             if (direction === 'vertical') {
-                 $wrapper.css('height', $container.height());
-             }
-
-             $wrapper.css(oriAttr.overflow, 'scroll');
-             $wrapper.css(oriAttr.crossSize, wrapper.parentNode[oriAttr.crossClient] + wrapper[oriAttr.crossOffset] - wrapper[oriAttr.crossClient] + 'px');
-
-             this[oriAttr.offsetPos] = this.getContentOffset(direction);
-             this.initBarLayout(direction);
-         },
-
-         initBarLayout: function(direction) {
-             var oriAttr = this.oriAttr[direction],
-                 options = this.options,
-                 wrapper = this.$wrapper[0],
-                 content = this.$content[0],
-                 classes = this.classes,
-                 $bar;
-
-             if (typeof this.getBar(direction) === 'undefined') {
-                 $bar = this.$container.find('.' + classes[direction + 'BarClass']);
-
-                 if ($bar.length === 0) {
-                     $bar = $(options.barTmpl.replace(/\{\{scrollbar\}\}/g, classes.barClass).replace(/\{\{handle\}\}/g, classes.handleClass));
-                     $bar.appendTo(this.$container);
-                 }
-
-                 $bar.asScrollable({
-                     namespace: options.namespace,
-                     skin: options.skin,
-                     barClass: options.barClass,
-                     directionClass: options[direction + 'BarClass'],
-                     handleClass: options.handleClass,
-                     direction: direction
-                 });
-
-                 this.setBar(direction, $bar);
-             } else {
-                 $bar = this.getBar(direction);
-             }
-
-             var bar = $bar[0],
-                 $scrollbar = this.getBarPlugin(direction),
-                 contentLength = content[oriAttr.scrollSize],
-                 wrapperLength = wrapper[oriAttr.client],
-                 percent, hPosition;
-
-             if (contentLength - wrapperLength > 0) {
-                 $bar.css('visibility', 'hidden').show();
-                 $scrollbar.setHandleLength(bar[oriAttr.client] * wrapperLength / contentLength);
-                 $bar.css('visibility', 'visible');
-
-                 percent = this.getPercentOffset(direction);
-                 hPosition = percent * $scrollbar.bLength;
-
-                 if (hPosition !== 0) {
-                     $scrollbar.handleMove(hPosition, false);
-                 }
-
-                 this.hasBar(direction, true);
-                 this.$container.addClass(classes.scrollableClass);
-                 this.hideBar(direction);
-             } else {
-                 this.hasBar(direction, false);
-                 this.$container.removeClass(classes.scrollableClass);
-                 this.hideBar(direction);
-             }
-         },
-
-         reInitLayout: function() {
-             this.$wrapper.removeAttr('style');
-             if (this.options.direction === 'horizontal' || this.options.direction === 'vertical') {
-                 this.initLayout(this.options.direction);
-             } else {
-                 this.initLayout('vertical');
-                 this.initLayout('horizontal');
-             }
-         },
-
-         initEvent: function() {
-             var self = this,
-                 options = this.options,
-                 $wrapper = this.$wrapper,
-                 $container = this.$container,
-                 timeoutId;
-
-             $wrapper.on('scroll', function() {
-                 var origOffsetTop = self.offsetTop,
-                     origOffsetLeft = self.offsetLeft,
-                     percent;
-
-                 self.offsetTop = self.getContentOffset('vertical');
-                 self.offsetLeft = self.getContentOffset('horizontal');
-
-                 if (self.offsetTop !== origOffsetTop) {
-                     percent = self.getPercentOffset('vertical');
-                     $(this).trigger(self.eventName('change'), [percent, 'content', 'vertical']);
-                 }
-
-                 if (self.offsetLeft !== origOffsetLeft) {
-                     percent = self.getPercentOffset('horizontal');
-                     $(this).trigger(self.eventName('change'), [percent, 'content', 'horizontal']);
-                 }
-             });
-
-             $container.on(this.eventName('change'), function(e, value, type, direction) {
-                 if (type === 'bar') {
-                     var $target = $(e.target);
-
-                     if ($target.hasClass(self.classes.verticalBarClass)) {
-                         self.move(value, true, 'vertical');
-                         $container.addClass(self.classes.verticalScrollingClass);
-                     } else if ($target.hasClass(self.classes.horizontalBarClass)) {
-                         self.move(value, true, 'horizontal');
-                         $container.addClass(self.classes.horizontalScrollingClass);
-                     }
-                 } else if (type === 'content') {
-                     self.getBarPlugin(direction).handleMove(value, true);
-                     $container.addClass(self.classes[direction + 'ScrollingClass']);
-                     clearTimeout(timeoutId);
-                     timeoutId = setTimeout(function() {
-                         $container.removeClass(self.classes.scrollingClass);
-                         $container.removeClass(self.classes.verticalScrollingClass);
-                         $container.removeClass(self.classes.horizontalBarClass);
-                     }, 200);
-                 }
-
-                 $container.addClass(self.classes.scrollingClass);
-
-                 if (value === 0) {
-                     self.$container.trigger(self.eventName('hitstart'));
-                 } else if (value === 1) {
-                     self.$container.trigger(self.eventName('hitend'));
-                 }
-             });
-
-             $container.on('mouseenter', function() {
-                 self.isOverContainer = true;
-                 if (options.direction === 'horizontal' || options.direction === 'vertical') {
-                     self.showBar(options.direction);
-                 } else {
-                     self.showBar('vertical');
-                     self.showBar('horizontal');
-                 }
-             });
-
-             $container.on('mouseleave', function() {
-                 self.isOverContainer = false;
-                 if (options.direction === 'horizontal' || options.direction === 'vertical') {
-                     self.hideBar(options.direction);
-                 } else {
-                     self.hideBar('vertical');
-                     self.hideBar('horizontal');
-                 }
-             });
-
-
-             $(document).on('blur mouseup', function() {
-                 $container.removeClass(self.classes.scrollingClass);
-                 $container.removeClass(self.classes.verticalScrollingClass);
-                 $container.removeClass(self.classes.horizontalBarClass);
-             });
-
-             if (options.responsive) {
-                 $(window).resize(function() {
-                     self.reInitLayout();
-                 });
-             }
-
-         },
-
-         eventName: function(events) {
-             if (typeof events !== 'string' || events === '') {
-                 return false;
-             }
-             events = events.split(' ');
-
-             var namespace = this.options.namespace,
-                 length = events.length;
-             for (var i = 0; i < length; i++) {
-                 events[i] = events[i] + '.' + namespace;
-             }
-             return events.join(' ');
-         },
-
-         setBar: function(direction, $bar) {
-             this['$' + direction + 'Bar'] = $bar;
-         },
-
-         getBar: function(direction) {
-             return this['$' + direction + 'Bar'];
-         },
-
-         hasBar: function(direction, value) {
-             if (typeof value !== 'undefined') {
-                 this['has' + direction + 'Bar'] = value;
-             } else {
-                 return this['has' + direction + 'Bar'];
-             }
-         },
-
-         showBar: function(direction) {
-             if (this.hasBar(direction)) {
-                 typeof this.getBar(direction) !== 'undefined' ? this.getBar(direction).show() : '';
-             }
-         },
-
-         hideBar: function(direction) {
-             if (this.options.showOnhover && this.hasBar(direction)) {
-                 if (!this.isOverContainer && !this.getBarPlugin(direction).isDrag) {
-                     typeof this.getBar(direction) !== 'undefined' ? this.getBar(direction).hide() : '';
-                 }
-             } else if (!this.hasBar(direction)) {
-                 typeof this.getBar(direction) !== 'undefined' ? this.getBar(direction).hide() : '';
-             }
-         },
-
-         getBarPlugin: function(direction) {
-             return typeof this.getBar(direction) !== 'undefined' ? this.getBar(direction).data('asScrollable') : '';
-         },
-
-         getContentOffset: function(direction) {
-             var oriAttr = this.oriAttr[direction],
-                 wrapper = this.$wrapper[0];
-
-             return (wrapper[oriAttr.pageOffset] || wrapper[oriAttr.scroll]);
-         },
-
-         getPercentOffset: function(direction) {
-             var oriAttr = this.oriAttr[direction],
-                 wrapper = this.$wrapper[0],
-                 content = this.$content[0];
-             return this.getContentOffset(direction) / (content[oriAttr.client] - wrapper[oriAttr.offset]);
-         },
-
-         getElementOffset: function($target, direction) {
-             var offset = 0,
-                 oriAttr = this.oriAttr[direction],
-                 $parent;
-
-             while (true) {
-
-                 if ($target.is(this.$container)) break;
-                 offset += $target.position()[oriAttr.pos];
-                 $parent = $target.offsetParent();
-
-                 if ($parent.is('html')) {
-                     if ($target.parent().is('html')) break;
-                     $target = $target.parent();
-                 } else {
-                     $target = $parent;
-                 }
-             }
-
-             return offset;
-         },
-
-         move: function(value, isPercent, direction, animate) {
-             if (typeof direction === 'undefined') {
-                 if (this.options.direction === 'horizontal' && this.options.direction === 'vertical') {
-                     this.move(value, isPercent, this.options.direction, animate);
-                 } else {
-                     this.move(value, isPercent, 'vertical', animate);
-                     this.move(value, isPercent, 'horizontal', animate);
-                 }
-                 return;
-             }
-             var oriAttr = this.oriAttr[direction],
-                 options = this.options,
-                 wrapper = this.$wrapper[0],
-                 content = this.$content[0];
-             if (isPercent) {
-                 if (value > 1 || value < 0) {
-                     return false;
-                 }
-
-                 value = -value * (wrapper[oriAttr.offset] - content[oriAttr.scrollSize]);
-             }
-
-             var params = {};
-             params[oriAttr.scroll] = value
-             if (animate) {
-                 this.$wrapper.stop().animate(params, options.duration);
-             } else {
-                 wrapper[oriAttr.scroll] = value;
-             }
-
-             this[oriAttr.offsetPos] = this.getContentOffset(direction);
-         },
-
-         to: function(selector, direction, animate) {
-             if (typeof direction === 'undefined') {
-                 if (this.options.direction === 'horizontal' && this.options.direction === 'vertical') {
-                     this.to(selector, this.options.direction, animate);
-                 } else {
-                     this.to(selector, 'vertical', animate);
-                     this.to(selector, 'horizontal', animate);
-                 }
-                 return;
-             }
-             var oriAttr = this.oriAttr[direction],
-                 wrapper = this.$wrapper[0],
-                 $item, offset, size, diff;
-             if (typeof selector === 'string') $item = $(selector, this.$content);
-             else $item = selector;
-
-
-             if ($item.length === 0) return;
-             if ($item.length > 1) $item = $item.get(0);
-
-             offset = this.getElementOffset($item, direction);
-             size = $item[oriAttr.size]();
-             diff = size + offset - wrapper[oriAttr.offset];
-
-             if (diff > 0) this.move(offset + this.getContentOffset(direction) - this.options.toOffset, false, direction, animate);
-             else if (offset < 0) this.move(offset + this.getContentOffset(direction) - this.options.toOffset, false, direction, animate);
-         },
-
-         destory: function() {
-             if (this.options.direction === 'horizontal' || this.options.direction === 'vertical') {
-                 this.getBar(this.options.direction);
-             } else {
-                 typeof this.getBar('vertical') !== 'undefined' ? this.getBar('vertical').remove() : '';
-                 typeof this.getBar('horizontal') !== 'undefined' ? this.getBar('horizontal').remove() : '';
-             }
-             this.$container.html(this.$content.html());
-             this.$container.removeData(pluginName);
-         }
-
-     }
-
-     $.fn[pluginName] = function(options) {
-         if (typeof options === 'string') {
-             var args = Array.prototype.slice.call(arguments, 1);
-             this.each(function() {
-                 var instance = $(this).data(pluginName);
-                 if (!instance) {
-                     return false;
-                 }
-                 if (!$.isFunction(instance[options]) || options.charAt(0) === "_") {
-                     return false;
-                 }
-                 // apply method
-                 instance[options].apply(instance, args);
-             });
-         } else {
-             this.each(function() {
-                 if (!$(this).data(pluginName)) {
-                     $(this).data(pluginName, new Plugin(options, this));
-                 } else {
-                     $(this).data(pluginName).reInitLayout();
-                 }
-             });
-
-         }
-         return this;
-     };
-
- })(jQuery, document, window);
+(function(window, document, $, Scrollbar, undefined) {
+    "use strict";
+
+    var pluginName = 'asScrollable';
+
+    /**
+     * Helper functions
+     **/
+    function isPercentage(n) {
+        return typeof n === 'string' && n.indexOf('%') != -1;
+    }
+
+    function conventToPercentage(n) {
+        if (n < 0) {
+            n = 0;
+        } else if (n > 1) {
+            n = 1;
+        }
+        return parseFloat(n).toFixed(4) * 100 + '%';
+    }
+
+    function convertPercentageToFloat(n) {
+        return parseFloat(n.slice(0, -1) / 100, 10);
+    }
+
+    var Plugin = $[pluginName] = function(options, element) {
+        this.$element = $(element);
+        options = this.options = $.extend({}, Plugin.defaults, options || {}, this.$element.data('options') || {});
+
+        this.classes = {
+            content: options.namespace + '-content',
+            container: options.namespace + '-container',
+            bar: options.namespace + '-bar',
+            barHide: options.namespace + '-bar-hide',
+            skin: options.skin
+        };
+
+        this.attributes = {
+            vertical: {
+                axis: 'Y',
+                overflow: 'overflow-y',
+
+                scroll: 'scrollTop',
+                scrollLength: 'scrollHeight',
+                pageOffset: 'pageYOffset',
+
+                length: 'height',
+                clientLength: 'clientHeight',
+                offset: 'offsetHeight',
+
+                crossLength: 'width',
+                crossClientLength: 'clientWidth',
+                crossOffset: 'offsetWidth'
+            },
+            horizontal: {
+                axis: 'X',
+                overflow: 'overflow-x',
+
+                scroll: 'scrollLeft',
+                scrollLength: 'scrollWidth',
+                pageOffset: 'pageXOffset',
+
+                length: 'width',
+                clientLength: 'clientWidth',
+                offset: 'offsetWidth',
+
+                crossLength: 'height',
+                crossClientLength: 'clientHeight',
+                crossOffset: 'offsetHeight'
+            }
+        };
+
+        // Current state information.
+        this._states = {};
+
+        this.horizontal = null;
+        this.vertical = null;
+
+        this.$bar = null;
+
+        if (this.options.containerSelector) {
+            this.$container = this.$element.find(this.options.containerSelector);
+        } else {
+            this.$container = this.$element.wrap('<div>');
+            this.$element = this.$container.parent();
+        }
+
+        if (this.options.contentSelector) {
+            this.$content = this.$container.find(this.options.contentSelector);
+        } else {
+            this.$content = this.$container.wrap('<div>');
+            this.$container = this.$content.parent();
+        }
+
+        this.init();
+    };
+
+    Plugin.defaults = {
+        namespace: 'asScrollable',
+
+        contentSelector: null,
+        containerSelector: null,
+
+        hoveringClass: 'is-hovering',
+
+        direction: 'vertical', // vertical, horizontal, both, auto
+
+        showOnHover: true,
+        showOnBarHover: false,
+
+        duration: '500',
+        easing: 'swing',
+
+        responsive: true,
+        throttle: 20,
+
+        scrollbar: {}
+    };
+
+    Plugin.prototype = {
+        constructor: Plugin,
+
+        init: function() {
+            this.$element.addClass(this.options.namespace);
+            this.$container.addClass(this.classes.container);
+            this.$content.addClass(this.classes.content);
+
+            if (this.options.skin) {
+                this.$element.addClass(this.classes.skin);
+            }
+
+            switch (this.options.direction) {
+                case 'vertical':
+                    this.vertical = true;
+                    break;
+                case 'horizontal':
+                    this.horizontal = true;
+                    break;
+                case 'both':
+                    this.horizontal = true;
+                    this.vertical = true;
+                    break;
+                case 'auto':
+                    var overflowX = this.$content.css('overflow-x'),
+                        overflowY = this.$content.css('overflow-y');
+                    if (overflowX === 'scroll' || overflowX === 'auto') {
+                        this.horizontal = true;
+                    }
+                    if (overflowY === 'scroll' || overflowY === 'auto') {
+                        this.vertical = true;
+                    }
+                    break;
+            }
+
+            this.$container.css('overflow', 'hidden');
+
+            if (this.horizontal) {
+                this.initLayout('horizontal');
+                this.createBar('horizontal');
+            }
+
+            if (this.vertical) {
+                this.initLayout('vertical');
+                this.createBar('vertical');
+            }
+
+            this.bindEvents();
+        },
+
+        bindEvents: function() {
+            var self = this;
+            var options = this.options;
+
+            this.$element.on(this.eventName('mouseenter'), function() {
+                self.$element.addClass(self.options.hoveringClass);
+                self.enter('hovering');
+                self.trigger('hover');
+            });
+
+            this.$element.on(this.eventName('mouseleave'), function() {
+                self.$element.removeClass(self.options.hoveringClass);
+
+                if (!self.is('hovering')) {
+                    return;
+                }
+                self.leave('hovering');
+                self.trigger('hovered');
+            });
+
+            if (options.showOnHover) {
+                if (options.showOnBarHover) {
+                    this.$bar.on('asScrollbar::hover', function() {
+                        self.showBar(this.direction);
+                    }).on('asScrollbar::hovered', function() {
+                        self.hideBar(this.direction);
+                    });
+                } else {
+                    this.$element.on(pluginName + '::hover', $.proxy(this.showBar, this));
+                    this.$element.on(pluginName + '::hovered', $.proxy(this.hideBar, this));
+                }
+            }
+
+            this.$container.on(this.eventName('scroll'), function() {
+                if (self.horizontal) {
+                    var oldLeft = self.offsetLeft;
+                    self.offsetLeft = self.getOffset('horizontal');
+
+                    if (oldLeft !== self.offsetLeft) {
+                        self.trigger('scroll', self.getPercentOffset('horizontal'), 'horizontal');
+                    }
+                }
+
+                if (self.vertical) {
+                    var oldTop = self.offsetTop;
+
+                    self.offsetTop = self.getOffset('vertical');
+
+                    if (oldTop !== self.offsetTop) {
+                        self.trigger('scroll', self.getPercentOffset('vertical'), 'vertical');
+                    }
+                }
+            });
+
+            this.$element.on(pluginName + '::scroll', function(e, api, value, direction) {
+                var bar = api.getBarApi(direction);
+
+                bar.moveTo(conventToPercentage(value), false, true);
+            });
+
+            this.$bar.on('asScrollbar::change', function(e, api, value) {
+                self.moveTo(this.direction, conventToPercentage(value), false, true);
+            });
+
+            if (options.responsive) {
+                $(window).on(this.eventName('resize'), this.throttle(function() {
+                    self.update.call(self);
+                }, options.throttle));
+            }
+        },
+
+        trigger: function(eventType) {
+            var method_arguments = Array.prototype.slice.call(arguments, 1),
+                data = [this].concat(method_arguments);
+
+            // event
+            this.$element.trigger(pluginName + '::' + eventType, data);
+
+            // callback
+            eventType = eventType.replace(/\b\w+\b/g, function(word) {
+                return word.substring(0, 1).toUpperCase() + word.substring(1);
+            });
+            var onFunction = 'on' + eventType;
+
+            if (typeof this.options[onFunction] === 'function') {
+                this.options[onFunction].apply(this, method_arguments);
+            }
+        },
+
+        /**
+         * Checks whether the carousel is in a specific state or not.
+         */
+        is: function(state) {
+            return this._states[state] && this._states[state] > 0;
+        },
+
+        /**
+         * Enters a state.
+         */
+        enter: function(state) {
+            if (this._states[state] === undefined) {
+                this._states[state] = 0;
+            }
+
+            this._states[state] ++;
+        },
+
+        /**
+         * Leaves a state.
+         */
+        leave: function(state) {
+            this._states[state] --;
+        },
+
+        eventName: function(events) {
+            if (typeof events !== 'string' || events === '') {
+                return '.' + this.options.namespace;
+            }
+            events = events.split(' ');
+
+            var length = events.length;
+            for (var i = 0; i < length; i++) {
+                events[i] = events[i] + '.' + this.options.namespace;
+            }
+            return events.join(' ');
+        },
+
+        /**
+         * _throttle
+         * @description Borrowed from Underscore.js
+         */
+        throttle: function(func, wait) {
+            var _now = Date.now || function() {
+                return new Date().getTime();
+            };
+            var context, args, result;
+            var timeout = null;
+            var previous = 0;
+            var later = function() {
+                previous = _now();
+                timeout = null;
+                result = func.apply(context, args);
+                context = args = null;
+            };
+            return function() {
+                var now = _now();
+                var remaining = wait - (now - previous);
+                context = this;
+                args = arguments;
+                if (remaining <= 0) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    previous = now;
+                    result = func.apply(context, args);
+                    context = args = null;
+                } else if (!timeout) {
+                    timeout = setTimeout(later, remaining);
+                }
+                return result;
+            };
+        },
+
+        initLayout: function(direction) {
+            if (direction === 'vertical') {
+                this.$content.css('height', this.$element.height());
+            }
+            var attributes = this.attributes[direction],
+                container = this.$container[0];
+
+            this.$container.css(attributes.overflow, 'scroll');
+            this.$container.css(attributes.crossLength, container.parentNode[attributes.crossClientLength] + container[attributes.crossOffset] - container[attributes.crossClientLength] + 'px');
+        },
+
+        createBar: function(direction) {
+            var options = $.extend(this.options.scrollbar, {
+                namespace: this.classes.bar,
+                direction: direction,
+                useCssTransitions: false,
+                keyboard: false
+            });
+            var $bar = $('<div>');
+            $bar.asScrollbar(options);
+
+            if (this.options.showOnHover) {
+                $bar.addClass(this.classes.barHide);
+            }
+
+            $bar.appendTo(this.$element);
+
+            this['$' + direction] = $bar;
+
+            if (this.$bar === null) {
+                this.$bar = $bar;
+            } else {
+                this.$bar = this.$bar.add($bar);
+            }
+
+            this.updateBarHandle(direction);
+        },
+
+        getOffset: function(direction) {
+            var attributes = this.attributes[direction],
+                container = this.$container[0];
+
+            return (container[attributes.pageOffset] || container[attributes.scroll]);
+        },
+
+        getPercentOffset: function(direction) {
+            return this.getOffset(direction) / this.getScrollLength(direction);
+        },
+
+        getContainerLength: function(direction) {
+            return this.$container[0][this.attributes[direction].clientLength];
+        },
+
+        getScrollLength: function(direction) {
+            var scrollLength = this.$content[0][this.attributes[direction].scrollLength];
+            return scrollLength - this.getContainerLength(direction);
+        },
+
+        moveTo: function(direction, value, trigger, sync) {
+            var type = typeof value;
+
+            if (type === "string") {
+                if (isPercentage(value)) {
+                    value = convertPercentageToFloat(value) * this.getScrollLength(direction);
+                }
+
+                value = parseFloat(value);
+                type = "number";
+            }
+
+            if (type !== "number") {
+                return;
+            }
+
+            this.move(direction, value, trigger, sync);
+        },
+
+        moveBy: function(direction, value, trigger, sync) {
+            var type = typeof value;
+
+            if (type === "string") {
+                if (isPercentage(value)) {
+                    value = convertPercentageToFloat(value) * this.getScrollLength(direction);
+                }
+
+                value = parseFloat(value);
+                type = "number";
+            }
+
+            if (type !== "number") {
+                return;
+            }
+
+            this.move(direction, this.getOffset(direction) + value, trigger, sync);
+        },
+
+        move: function(direction, value, trigger, sync) {
+            if (this[direction] !== true || typeof value !== "number") {
+                return;
+            }
+            var self = this;
+
+            this.enter('moving');
+
+            if (value < 0) {
+                value = 0;
+            } else if (value > this.getScrollLength(direction)) {
+                value = this.getScrollLength(direction);
+            }
+
+            if (trigger !== false) {
+                this.trigger('change', value / this.getScrollLength(direction));
+            }
+
+            var attributes = this.attributes[direction];
+
+            var callback = function() {
+                self.leave('moving');
+            }
+
+            if (sync) {
+                this.$container[0][attributes.scroll] = value;
+
+                callback();
+            } else {
+                var style = {};
+                style[attributes.scroll] = value;
+
+                this.$container.stop().animate(style, {
+                    duration: this.options.duration,
+                    easing: this.options.easing
+                }, callback);
+            }
+        },
+
+        moveXto: function(value, trigger, sync) {
+            return this.moveTo('horizontal', value, trigger, sync);
+        },
+
+        moveYto: function(value, trigger, sync) {
+            return this.moveTo('vertical', value, trigger, sync);
+        },
+
+        moveXby: function(value, trigger, sync) {
+            return this.moveBy('horizontal', value, trigger, sync);
+        },
+
+        moveYby: function(value, trigger, sync) {
+            return this.moveBy('vertical', value, trigger, sync);
+        },
+
+        moveX: function(value, trigger, sync) {
+            return this.move('horizontal', value, trigger, sync);
+        },
+
+        moveY: function(value, trigger, sync) {
+            return this.move('vertical', value, trigger, sync);
+        },
+
+        getBar: function(direction) {
+            if (direction && this['$' + direction]) {
+                return this['$' + direction];
+            } else {
+                return this.$bar;
+            }
+        },
+
+        getBarApi: function(direction) {
+            return this.getBar(direction).data('asScrollbar');
+        },
+
+        getBarX: function() {
+            return this.getBar('horizontal');
+        },
+
+        getBarY: function() {
+            return this.getBar('vertical');
+        },
+
+        showBar: function(direction) {
+            this.getBar(direction).removeClass(this.classes.barHide);
+        },
+
+        hideBar: function(direction) {
+            this.getBar(direction).addClass(this.classes.barHide);
+        },
+
+        update: function() {
+            if (this.vertical) {
+                this.initLayout('vertical');
+                this.updateBarHandle('vertical');
+            }
+            if (this.horizontal) {
+                this.initLayout('vertical');
+                this.updateBarHandle('horizontal');
+            }
+        },
+
+        updateBarHandle: function(direction) {
+            var api = this.getBarApi(direction);
+
+            var scrollLength = this.getScrollLength(direction),
+                containerLength = this.getContainerLength(direction);
+
+            if (scrollLength > 0) {
+                if (api.is('disabled')) {
+                    api.enable();
+                }
+                api.setHandleLength(api.getBarLength() * containerLength / (scrollLength + containerLength));
+            } else {
+                api.disable();
+            }
+        },
+
+        destory: function() {
+            this.$bar.remove();
+            this.$element.off(this.eventName());
+            this.$element.off(pluginName + '::scroll');
+            this.$container.off(this.eventName());
+        }
+    }
+
+    $.fn[pluginName] = function(options) {
+        if (typeof options === 'string') {
+            var args = Array.prototype.slice.call(arguments, 1);
+            this.each(function() {
+                var instance = $(this).data(pluginName);
+                if (!instance) {
+                    return false;
+                }
+                if (!$.isFunction(instance[options]) || options.charAt(0) === "_") {
+                    return false;
+                }
+                // apply method
+                instance[options].apply(instance, args);
+            });
+        } else {
+            return this.each(function() {
+                if (!$(this).data(pluginName)) {
+                    $(this).data(pluginName, new Plugin(options, this));
+                } else {
+                    $(this).data(pluginName).reInitLayout();
+                }
+            });
+        }
+        return this;
+    };
+
+})(window, document, jQuery, (function($) {
+    "use strict"
+    if ($.asScrollbar === undefined) {
+        // console.info('lost dependency lib of $.asScrollbar , please load it first !');
+        return false;
+    } else {
+        return $.asScrollbar;
+    }
+}(jQuery)));

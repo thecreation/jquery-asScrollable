@@ -1,14 +1,35 @@
 @scrollable: asScrollable;
 
-@scrollable-bar-size: 10px;
-@scrollable-bar-handle-color: #ccc;
+@scrollable-bar-size: 4px;
+@scrollable-bar-dragging-size: 10px;
+
+@scrollable-bar-dragging-color: rgba(238, 238, 238, 0.6);
+@scrollable-bar-hovering-color: rgba(238, 238, 238, 0.4);
+
+@scrollable-bar-handle-offset: 5px;
+
+@scrollable-bar-handle-color: rgba(224, 224, 224, 0.6);
+@scrollable-bar-handle-hovering-color: rgba(224, 224, 224, 0.8);
+@scrollable-bar-handle-dragging-color: rgba(200, 200, 200, 0.8);
 
 .@{scrollable} {
+	position: relative !important;
+	overflow: hidden !important;
 
 	&-container::-webkit-scrollbar {
 		width:0;
 	}
 
+	&-content {
+		&:before,
+		&:after {
+			content: " ";
+			display: table;
+		}
+		&:after {
+			clear: both;
+		}
+	}
 	&-bar {
 		transition: opacity 1s;
 		&-hide {
@@ -22,13 +43,29 @@
 		line-height: 0;
 		
 		overflow:hidden;
-		border-radius: (@scrollable-bar-size - 2px)/2;
+		border-radius: @scrollable-bar-size/2;
 		box-sizing:border-box;
-		border: 2px solid transparent;
+		
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+
+		&.is-hovering {
+			background: @scrollable-bar-hovering-color;
+		}
 
 		&.is-dragging {
-			background: #eee;
+			background: @scrollable-bar-dragging-color !important;
+			border-radius: @scrollable-bar-dragging-size/2;
 			border: none;
+
+			opacity: 1;
+		}
+
+		&.is-disabled {
+			display: none;
 		}
 
 		&-handle {
@@ -42,10 +79,23 @@
 			border-radius: @scrollable-bar-size/2px;
 		}
 
-		&-vertical {
-			height:100%;
+		&.is-dragging &-handle {
+			background: @scrollable-bar-handle-dragging-color !important;
+			border-radius: @scrollable-bar-dragging-size/2px;
+		}
+
+		&-vertical {			
 			width: @scrollable-bar-size;
-			margin: 0 5px;
+			margin: @scrollable-bar-handle-offset (@scrollable-bar-dragging-size - @scrollable-bar-size)/2;
+
+			height: 100%;
+			height: ~"calc(100% - 2*@{scrollable-bar-handle-offset})";
+		}
+
+		&-vertical.is-dragging {
+			width: @scrollable-bar-dragging-size;
+
+			margin: @scrollable-bar-handle-offset 1px;
 		}
 
 		&-vertical &-handle {
@@ -54,12 +104,27 @@
 
 		&-horizontal {
 		    height: @scrollable-bar-size;
-		    margin: 5px 0;
+		    margin: (@scrollable-bar-dragging-size - @scrollable-bar-size)/2 @scrollable-bar-handle-offset;
+
 			width:100%;
+			width: ~"calc(100% - 2*@{scrollable-bar-handle-offset})";
+		}
+
+		&-horizontal.is-dragging {
+			height: @scrollable-bar-dragging-size;
+
+			margin: 1px @scrollable-bar-handle-offset;
 		}
 
 		&-horizontal &-handle { 
 			height: 100%; 
 		}
+	}
+
+	&.is-hovering {
+		.@{scrollable}-bar-handle {
+			background: @scrollable-bar-handle-hovering-color;
+		}
+		
 	}
 }

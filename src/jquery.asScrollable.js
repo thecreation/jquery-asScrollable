@@ -2,10 +2,9 @@
  * asScrollable
  * https://github.com/amazingSurge/jquery-asScrollable
  *
- * Copyright (c) 2014 amazingSurge
+ * Copyright (c) 2015 amazingSurge
  * Licensed under the GPL license.
  */
-
 (function(window, document, $, Scrollbar, undefined) {
     "use strict";
 
@@ -24,7 +23,7 @@
         } else if (n > 1) {
             n = 1;
         }
-        return n * 100 + '%';
+        return parseFloat(n).toFixed(4) * 100 + '%';
     }
 
     function convertPercentageToFloat(n) {
@@ -46,7 +45,6 @@
         this.attributes = {
             vertical: {
                 axis: 'Y',
-                position: 'top',
                 overflow: 'overflow-y',
 
                 scroll: 'scrollTop',
@@ -60,10 +58,9 @@
                 crossLength: 'width',
                 crossClientLength: 'clientWidth',
                 crossOffset: 'offsetWidth'
-           },
-           horizontal: {
+            },
+            horizontal: {
                 axis: 'X',
-                position: 'left',
                 overflow: 'overflow-x',
 
                 scroll: 'scrollLeft',
@@ -83,25 +80,19 @@
         // Current state information.
         this._states = {};
 
-        // Current position information.
-        this._position = {
-            x: 0,
-            y: 0
-        };
-
         this.horizontal = null;
         this.vertical = null;
 
         this.$bar = null;
 
-        if(this.options.containerSelector) {
+        if (this.options.containerSelector) {
             this.$container = this.$element.find(this.options.containerSelector);
         } else {
             this.$container = this.$element.wrap('<div>');
             this.$element = this.$container.parent();
         }
 
-        if(this.options.contentSelector) {
+        if (this.options.contentSelector) {
             this.$content = this.$container.find(this.options.contentSelector);
         } else {
             this.$content = this.$container.wrap('<div>');
@@ -117,18 +108,18 @@
         contentSelector: null,
         containerSelector: null,
 
-        scrollableClass: 'is-scrollable',
-        scrollingClass: 'is-scrolling',
         hoveringClass: 'is-hovering',
-        
+
         direction: 'vertical', // vertical, horizontal, both, auto
-        
-        responsive: false,
-        showOnHover: false,
-        showOnBarHover: true,
+
+        showOnHover: true,
+        showOnBarHover: false,
 
         duration: '500',
         easing: 'swing',
+
+        responsive: true,
+        throttle: 20,
 
         scrollbar: {}
     };
@@ -136,16 +127,16 @@
     Plugin.prototype = {
         constructor: Plugin,
 
-        init: function(){
+        init: function() {
             this.$element.addClass(this.options.namespace);
             this.$container.addClass(this.classes.container);
             this.$content.addClass(this.classes.content);
-            
+
             if (this.options.skin) {
                 this.$element.addClass(this.classes.skin);
             }
 
-            switch(this.options.direction){
+            switch (this.options.direction) {
                 case 'vertical':
                     this.vertical = true;
                     break;
@@ -156,13 +147,13 @@
                     this.horizontal = true;
                     this.vertical = true;
                     break;
-                case 'auto': 
-                default:
-                    var overflowX = this.$content.css('overflow-x'), overflowY = this.$content.css('overflow-y');
-                    if(overflowX === 'scroll' || overflowX === 'auto') {
+                case 'auto':
+                    var overflowX = this.$content.css('overflow-x'),
+                        overflowY = this.$content.css('overflow-y');
+                    if (overflowX === 'scroll' || overflowX === 'auto') {
                         this.horizontal = true;
                     }
-                    if(overflowY === 'scroll' || overflowY === 'auto') {
+                    if (overflowY === 'scroll' || overflowY === 'auto') {
                         this.vertical = true;
                     }
                     break;
@@ -170,17 +161,12 @@
 
             this.$container.css('overflow', 'hidden');
 
-            this.$element.css({
-                overflow: 'hidden',
-                position: 'relative'
-            });
-
-            if(this.horizontal) {
+            if (this.horizontal) {
                 this.initLayout('horizontal');
                 this.createBar('horizontal');
             }
 
-            if(this.vertical) {
+            if (this.vertical) {
                 this.initLayout('vertical');
                 this.createBar('vertical');
             }
@@ -192,13 +178,13 @@
             var self = this;
             var options = this.options;
 
-            this.$element.on(this.eventName('mouseenter'), function(e) {
+            this.$element.on(this.eventName('mouseenter'), function() {
                 self.$element.addClass(self.options.hoveringClass);
                 self.enter('hovering');
                 self.trigger('hover');
             });
 
-            this.$element.on(this.eventName('mouseleave'), function(e) {
+            this.$element.on(this.eventName('mouseleave'), function() {
                 self.$element.removeClass(self.options.hoveringClass);
 
                 if (!self.is('hovering')) {
@@ -208,11 +194,11 @@
                 self.trigger('hovered');
             });
 
-            if(options.showOnHover){
-                if(options.showOnBarHover){
-                    this.$bar.on('asScrollbar::hover', function(){
+            if (options.showOnHover) {
+                if (options.showOnBarHover) {
+                    this.$bar.on('asScrollbar::hover', function() {
                         self.showBar(this.direction);
-                    }).on('asScrollbar::hovered', function(){
+                    }).on('asScrollbar::hovered', function() {
                         self.hideBar(this.direction);
                     });
                 } else {
@@ -221,36 +207,42 @@
                 }
             }
 
-            this.$container.on(this.eventName('scroll'), function(){
-                if(self.horizontal) {
+            this.$container.on(this.eventName('scroll'), function() {
+                if (self.horizontal) {
                     var oldLeft = self.offsetLeft;
                     self.offsetLeft = self.getOffset('horizontal');
 
-                    if(oldLeft !== self.offsetLeft ) {
+                    if (oldLeft !== self.offsetLeft) {
                         self.trigger('scroll', self.getPercentOffset('horizontal'), 'horizontal');
                     }
                 }
 
-                if(self.vertical) {
+                if (self.vertical) {
                     var oldTop = self.offsetTop;
-                    
+
                     self.offsetTop = self.getOffset('vertical');
 
-                    if(oldTop !== self.offsetTop ) {
+                    if (oldTop !== self.offsetTop) {
                         self.trigger('scroll', self.getPercentOffset('vertical'), 'vertical');
                     }
                 }
             });
 
-            this.$element.on(pluginName + '::scroll', function(e, api, value, direction){
+            this.$element.on(pluginName + '::scroll', function(e, api, value, direction) {
                 var bar = api.getBarApi(direction);
 
                 bar.moveTo(conventToPercentage(value), false, true);
             });
 
-            this.$bar.on('asScrollbar::change', function(e, api, value){
+            this.$bar.on('asScrollbar::change', function(e, api, value) {
                 self.moveTo(this.direction, conventToPercentage(value), false, true);
             });
+
+            if (options.responsive) {
+                $(window).on(this.eventName('resize'), this.throttle(function() {
+                    self.update.call(self);
+                }, options.throttle));
+            }
         },
 
         trigger: function(eventType) {
@@ -309,12 +301,47 @@
             return events.join(' ');
         },
 
+        /**
+         * _throttle
+         * @description Borrowed from Underscore.js
+         */
+        throttle: function(func, wait) {
+            var _now = Date.now || function() {
+                return new Date().getTime();
+            };
+            var context, args, result;
+            var timeout = null;
+            var previous = 0;
+            var later = function() {
+                previous = _now();
+                timeout = null;
+                result = func.apply(context, args);
+                context = args = null;
+            };
+            return function() {
+                var now = _now();
+                var remaining = wait - (now - previous);
+                context = this;
+                args = arguments;
+                if (remaining <= 0) {
+                    clearTimeout(timeout);
+                    timeout = null;
+                    previous = now;
+                    result = func.apply(context, args);
+                    context = args = null;
+                } else if (!timeout) {
+                    timeout = setTimeout(later, remaining);
+                }
+                return result;
+            };
+        },
 
         initLayout: function(direction) {
-            if(direction === 'vertical') {
+            if (direction === 'vertical') {
                 this.$content.css('height', this.$element.height());
             }
-            var attributes = this.attributes[direction], container = this.$container[0];
+            var attributes = this.attributes[direction],
+                container = this.$container[0];
 
             this.$container.css(attributes.overflow, 'scroll');
             this.$container.css(attributes.crossLength, container.parentNode[attributes.crossClientLength] + container[attributes.crossOffset] - container[attributes.crossClientLength] + 'px');
@@ -324,33 +351,55 @@
             var options = $.extend(this.options.scrollbar, {
                 namespace: this.classes.bar,
                 direction: direction,
+                useCssTransitions: false,
                 keyboard: false
             });
-            var $bar = $('<div>').asScrollbar(options);
+            var $bar = $('<div>');
+            $bar.asScrollbar(options);
 
-            if(this.options.showOnHover){
+            if (this.options.showOnHover) {
                 $bar.addClass(this.classes.barHide);
             }
 
             $bar.appendTo(this.$element);
 
-            this['$'+direction] = $bar;
+            this['$' + direction] = $bar;
 
-            if(this.$bar === null) {
+            if (this.$bar === null) {
                 this.$bar = $bar;
             } else {
-                this.$bar.add($bar);
+                this.$bar = this.$bar.add($bar);
             }
 
             this.updateBarHandle(direction);
         },
 
-        moveTo: function(direction, value, trigger, directly) {
+        getOffset: function(direction) {
+            var attributes = this.attributes[direction],
+                container = this.$container[0];
+
+            return (container[attributes.pageOffset] || container[attributes.scroll]);
+        },
+
+        getPercentOffset: function(direction) {
+            return this.getOffset(direction) / this.getScrollLength(direction);
+        },
+
+        getContainerLength: function(direction) {
+            return this.$container[0][this.attributes[direction].clientLength];
+        },
+
+        getScrollLength: function(direction) {
+            var scrollLength = this.$content[0][this.attributes[direction].scrollLength];
+            return scrollLength - this.getContainerLength(direction);
+        },
+
+        moveTo: function(direction, value, trigger, sync) {
             var type = typeof value;
 
             if (type === "string") {
                 if (isPercentage(value)) {
-                    value = convertPercentageToFloat(value) * this.getScollLength(direction);
+                    value = convertPercentageToFloat(value) * this.getScrollLength(direction);
                 }
 
                 value = parseFloat(value);
@@ -361,15 +410,15 @@
                 return;
             }
 
-            this.move(direction, value, trigger, directly);
+            this.move(direction, value, trigger, sync);
         },
 
-        moveBy: function(direction, value, trigger, directly) {
+        moveBy: function(direction, value, trigger, sync) {
             var type = typeof value;
 
             if (type === "string") {
                 if (isPercentage(value)) {
-                    value = convertPercentageToFloat(value) * this.getScollLength(direction);
+                    value = convertPercentageToFloat(value) * this.getScrollLength(direction);
                 }
 
                 value = parseFloat(value);
@@ -380,11 +429,11 @@
                 return;
             }
 
-            this.move(direction, this.getOffset(direction) + value, trigger, directly);
+            this.move(direction, this.getOffset(direction) + value, trigger, sync);
         },
 
-        move: function(direction, value, trigger, directly) {
-            if (typeof value !== "number") {
+        move: function(direction, value, trigger, sync) {
+            if (this[direction] !== true || typeof value !== "number") {
                 return;
             }
             var self = this;
@@ -393,21 +442,21 @@
 
             if (value < 0) {
                 value = 0;
-            } else if (value > this.getScollLength(direction)) {
-                value = this.getScollLength(direction);
+            } else if (value > this.getScrollLength(direction)) {
+                value = this.getScrollLength(direction);
             }
 
-            if (trigger) {
-                this.trigger('change', value / this.getScollLength(direction));
+            if (trigger !== false) {
+                this.trigger('change', value / this.getScrollLength(direction));
             }
 
             var attributes = this.attributes[direction];
 
-            var callback = function(){
+            var callback = function() {
                 self.leave('moving');
             }
 
-            if(directly) {
+            if (sync) {
                 this.$container[0][attributes.scroll] = value;
 
                 callback();
@@ -422,69 +471,33 @@
             }
         },
 
-        moveXto: function(value, trigger, directly) {
-            return moveTo('horizontal', value, trigger, directly);
+        moveXto: function(value, trigger, sync) {
+            return this.moveTo('horizontal', value, trigger, sync);
         },
 
-        moveYto: function(value, trigger, directly) {
-            return moveTo('vertical', value, trigger, directly);
+        moveYto: function(value, trigger, sync) {
+            return this.moveTo('vertical', value, trigger, sync);
         },
 
-        moveXby: function(value, trigger, directly) {
-            return moveBy('horizontal', value, trigger, directly);
+        moveXby: function(value, trigger, sync) {
+            return this.moveBy('horizontal', value, trigger, sync);
         },
 
-        moveYby: function(value, trigger, directly) {
-            return moveBy('horizontal', value, trigger, directly);
+        moveYby: function(value, trigger, sync) {
+            return this.moveBy('vertical', value, trigger, sync);
         },
 
-        moveX: function(value, trigger, directly) {
-            return move('horizontal', value, trigger, directly);
+        moveX: function(value, trigger, sync) {
+            return this.move('horizontal', value, trigger, sync);
         },
 
-        moveY: function(value, trigger, directly) {
-            return move('horizontal', value, trigger, directly);
-        },
-
-        updateBarHandle: function(direction) {
-            var api = this.getBarApi(direction);
-
-            var attributes = this.attributes[direction], 
-                contentLength = this.$content[0][attributes.scrollLength],
-                containerLength = this.$element[0][attributes.clientLength];
-
-                console.info(contentLength);
-                console.info(containerLength);
-
-            if(contentLength > containerLength) {
-                api.setHandleLength(api.getBarLength() * containerLength/contentLength);
-            }
-
-            //api.setHandleLength();
-            //api.setHandlePosition();
-        },
-
-        getOffset: function(direction) {
-            var attributes = this.attributes[direction],
-            container = this.$container[0];
-
-            return (container[attributes.pageOffset] || container[attributes.scroll]);
-        },
-
-        getPercentOffset: function(direction) {
-            return this.getOffset(direction) / this.getScollLength(direction);
-        },
-
-        getScollLength: function(direction){
-            var attributes = this.attributes[direction],
-                content = this.$content[0];
-
-            return content[attributes.clientLength];
+        moveY: function(value, trigger, sync) {
+            return this.move('vertical', value, trigger, sync);
         },
 
         getBar: function(direction) {
-            if(direction && this['$'+direction]){
-                return this['$'+direction]; 
+            if (direction && this['$' + direction]) {
+                return this['$' + direction];
             } else {
                 return this.$bar;
             }
@@ -494,11 +507,11 @@
             return this.getBar(direction).data('asScrollbar');
         },
 
-        getBarX: function(){
+        getBarX: function() {
             return this.getBar('horizontal');
         },
 
-        getBarY: function(){
+        getBarY: function() {
             return this.getBar('vertical');
         },
 
@@ -508,6 +521,40 @@
 
         hideBar: function(direction) {
             this.getBar(direction).addClass(this.classes.barHide);
+        },
+
+        update: function() {
+            if (this.vertical) {
+                this.initLayout('vertical');
+                this.updateBarHandle('vertical');
+            }
+            if (this.horizontal) {
+                this.initLayout('vertical');
+                this.updateBarHandle('horizontal');
+            }
+        },
+
+        updateBarHandle: function(direction) {
+            var api = this.getBarApi(direction);
+
+            var scrollLength = this.getScrollLength(direction),
+                containerLength = this.getContainerLength(direction);
+
+            if (scrollLength > 0) {
+                if (api.is('disabled')) {
+                    api.enable();
+                }
+                api.setHandleLength(api.getBarLength() * containerLength / (scrollLength + containerLength));
+            } else {
+                api.disable();
+            }
+        },
+
+        destory: function() {
+            this.$bar.remove();
+            this.$element.off(this.eventName());
+            this.$element.off(pluginName + '::scroll');
+            this.$container.off(this.eventName());
         }
     }
 
@@ -526,19 +573,19 @@
                 instance[options].apply(instance, args);
             });
         } else {
-            this.each(function() {
+            return this.each(function() {
                 if (!$(this).data(pluginName)) {
                     $(this).data(pluginName, new Plugin(options, this));
                 } else {
                     $(this).data(pluginName).reInitLayout();
                 }
             });
-
         }
         return this;
     };
 
 })(window, document, jQuery, (function($) {
+    "use strict"
     if ($.asScrollbar === undefined) {
         // console.info('lost dependency lib of $.asScrollbar , please load it first !');
         return false;
