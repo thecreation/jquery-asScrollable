@@ -811,7 +811,7 @@
                 return;
             }
 
-            this.move(this.handlePosition + value, trigger);
+            this.move(this.handlePosition + value, trigger, directly);
         },
 
         move: function(value, trigger, directly) {

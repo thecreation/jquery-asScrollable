@@ -71,7 +71,7 @@ body {
                     </div>
             </section>
 
-	        <section>
+	        <!-- <section>
                 <h3>Horizontal Scrollable</h3>
                     <div class="example content-300px-height" data-options='{"direction": "horizontal"}'>
                         
@@ -83,7 +83,7 @@ body {
                     <div class="example content-300px-height" data-options='{"direction": "both"}'>
                         
                     </div>
-            </section>
+            </section> -->
 
             <section>
                 <div>
@@ -114,26 +114,17 @@ body {
 
             });
 
-            // var api = $('.example-scrollable-horizontal').data('asScrollable');
+            $('.api-move-to').on('click', function(){
+                var to = $(this).data('to');
 
-            // $('.api-move-to').on('click', function(){
-            //     var to = $(this).data('to');
+                $('.example').asScrollable('moveTo', 'vertical', to);
+            });
 
-            //     $('.example-scrollable-horizontal, .example-scrollable-vertical').asScrollable('moveTo', to);
-            //     //api.moveTo(to);
-            // });
+            $('.api-move-by').on('click', function(){
+                var to = $(this).data('by');
 
-            // $('.api-move-by').on('click', function(){
-            //     var to = $(this).data('by');
-            //     //api.moveBy(to);
-
-            //     $('.example-scrollable-horizontal, .example-scrollable-vertical').asScrollable('moveBy', to);
-            // });
-
-            // $('.example-scrollable-vertical').asScrollable({
-            //     direction: 'vertical',
-            //     handleLength: 100
-            // });
+                $('.example').asScrollable('moveBy', 'vertical', to);
+            });
         });
     </script>
 </body>

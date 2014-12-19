@@ -11,6 +11,13 @@
 
     var pluginName = 'asScrollable';
 
+    /**
+     * Helper functions
+     **/
+    function isPercentage(n) {
+        return typeof n === 'string' && n.indexOf('%') != -1;
+    }
+
     function conventToPercentage(n) {
         if (n < 0) {
             n = 0;
@@ -18,6 +25,10 @@
             n = 1;
         }
         return n * 100 + '%';
+    }
+
+    function convertPercentageToFloat(n) {
+        return parseFloat(n.slice(0, -1) / 100, 10);
     }
 
     var Plugin = $[pluginName] = function(options, element) {
@@ -115,6 +126,10 @@
         responsive: false,
         showOnHover: false,
         showOnBarHover: true,
+
+        duration: '500',
+        easing: 'swing',
+
         scrollbar: {}
     };
 
@@ -234,7 +249,7 @@
             });
 
             this.$bar.on('asScrollbar::change', function(e, api, value){
-
+                self.moveTo(this.direction, conventToPercentage(value), false, true);
             });
         },
 
@@ -330,8 +345,105 @@
             this.updateBarHandle(direction);
         },
 
-        move: function() {
-            
+        moveTo: function(direction, value, trigger, directly) {
+            var type = typeof value;
+
+            if (type === "string") {
+                if (isPercentage(value)) {
+                    value = convertPercentageToFloat(value) * this.getScollLength(direction);
+                }
+
+                value = parseFloat(value);
+                type = "number";
+            }
+
+            if (type !== "number") {
+                return;
+            }
+
+            this.move(direction, value, trigger, directly);
+        },
+
+        moveBy: function(direction, value, trigger, directly) {
+            var type = typeof value;
+
+            if (type === "string") {
+                if (isPercentage(value)) {
+                    value = convertPercentageToFloat(value) * this.getScollLength(direction);
+                }
+
+                value = parseFloat(value);
+                type = "number";
+            }
+
+            if (type !== "number") {
+                return;
+            }
+
+            this.move(direction, this.getOffset(direction) + value, trigger, directly);
+        },
+
+        move: function(direction, value, trigger, directly) {
+            if (typeof value !== "number") {
+                return;
+            }
+            var self = this;
+
+            this.enter('moving');
+
+            if (value < 0) {
+                value = 0;
+            } else if (value > this.getScollLength(direction)) {
+                value = this.getScollLength(direction);
+            }
+
+            if (trigger) {
+                this.trigger('change', value / this.getScollLength(direction));
+            }
+
+            var attributes = this.attributes[direction];
+
+            var callback = function(){
+                self.leave('moving');
+            }
+
+            if(directly) {
+                this.$container[0][attributes.scroll] = value;
+
+                callback();
+            } else {
+                var style = {};
+                style[attributes.scroll] = value;
+
+                this.$container.stop().animate(style, {
+                    duration: this.options.duration,
+                    easing: this.options.easing
+                }, callback);
+            }
+        },
+
+        moveXto: function(value, trigger, directly) {
+            return moveTo('horizontal', value, trigger, directly);
+        },
+
+        moveYto: function(value, trigger, directly) {
+            return moveTo('vertical', value, trigger, directly);
+        },
+
+        moveXby: function(value, trigger, directly) {
+            return moveBy('horizontal', value, trigger, directly);
+        },
+
+        moveYby: function(value, trigger, directly) {
+            return moveBy('horizontal', value, trigger, directly);
+        },
+
+        moveX: function(value, trigger, directly) {
+            return move('horizontal', value, trigger, directly);
+        },
+
+        moveY: function(value, trigger, directly) {
+            return move('horizontal', value, trigger, directly);
         },
 
         updateBarHandle: function(direction) {
@@ -360,9 +472,14 @@
         },
 
         getPercentOffset: function(direction) {
+            return this.getOffset(direction) / this.getScollLength(direction);
+        },
+
+        getScollLength: function(direction){
             var attributes = this.attributes[direction],
                 content = this.$content[0];
-            return this.getOffset(direction) / content[attributes.clientLength];
+
+            return content[attributes.clientLength];
         },
 
         getBar: function(direction) {
