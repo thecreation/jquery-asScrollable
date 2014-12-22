@@ -26,6 +26,20 @@
         return parseFloat(n.slice(0, -1) / 100, 10);
     }
 
+    var isFFLionScrollbar = (function() {
+        var isOSXFF, ua, version;
+        ua = window.navigator.userAgent;
+        isOSXFF = /(?=.+Mac OS X)(?=.+Firefox)/.test(ua);
+        if (!isOSXFF) {
+            return false;
+        }
+        version = /Firefox\/\d{2}\./.exec(ua);
+        if (version) {
+            version = version[0].replace(/\D+/g, '');
+        }
+        return isOSXFF && +version > 23;
+    })();
+
     var Plugin = $[pluginName] = function(options, element) {
         this.$element = $(element);
         options = this.options = $.extend({}, Plugin.defaults, options || {}, this.$element.data('options') || {});
@@ -47,6 +61,8 @@
                 scrollLength: 'scrollHeight',
                 pageOffset: 'pageYOffset',
 
+                ffPadding: 'padding-right',
+
                 length: 'height',
                 clientLength: 'clientHeight',
                 offset: 'offsetHeight',
@@ -62,6 +78,8 @@
                 scroll: 'scrollLeft',
                 scrollLength: 'scrollWidth',
                 pageOffset: 'pageXOffset',
+
+                ffPadding: 'padding-bottom',
 
                 length: 'width',
                 clientLength: 'clientWidth',
@@ -157,15 +175,18 @@
 
             this.$container.css('overflow', 'hidden');
 
-            if (this.horizontal) {
-                this.initLayout('horizontal');
-                this.createBar('horizontal');
-            }
 
             if (this.vertical) {
                 this.initLayout('vertical');
                 this.createBar('vertical');
             }
+
+            if (this.horizontal) {
+                this.initLayout('horizontal');
+                this.createBar('horizontal');
+            }
+
+
 
             this.bindEvents();
         },
@@ -340,7 +361,14 @@
                 container = this.$container[0];
 
             this.$container.css(attributes.overflow, 'scroll');
-            this.$container.css(attributes.crossLength, container.parentNode[attributes.crossClientLength] + container[attributes.crossOffset] - container[attributes.crossClientLength] + 'px');
+
+            var scrollbarWidth = this.getBrowserScrollbarWidth(direction);
+
+            this.$container.css(attributes.crossLength, scrollbarWidth + container.parentNode[attributes.crossClientLength] + 'px');
+
+            if (scrollbarWidth === 0 && isFFLionScrollbar) {
+                this.$container.css(attributes.ffPadding, 16);
+            }
         },
 
         createBar: function(direction) {
@@ -368,6 +396,25 @@
             }
 
             this.updateBarHandle(direction);
+        },
+
+        getBrowserScrollbarWidth: function(direction) {
+            var attributes = this.attributes[direction],
+                outer, outerStyle;
+            if (attributes.scrollbarWidth) {
+                return attributes.scrollbarWidth;
+            }
+            outer = document.createElement('div');
+            outerStyle = outer.style;
+            outerStyle.position = 'absolute';
+            outerStyle.width = '100px';
+            outerStyle.height = '100px';
+            outerStyle.overflow = 'scroll';
+            outerStyle.top = '-9999px';
+            document.body.appendChild(outer);
+            attributes.scrollbarWidth = outer[attributes.offset] - outer[attributes.clientLength];
+            document.body.removeChild(outer);
+            return attributes.scrollbarWidth;
         },
 
         getOffset: function(direction) {

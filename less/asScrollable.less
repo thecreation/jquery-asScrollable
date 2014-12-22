@@ -9,15 +9,17 @@
 @scrollable-bar-handle-offset: 5px;
 
 @scrollable-bar-handle-color: rgba(224, 224, 224, 0.6);
-@scrollable-bar-handle-hovering-color: rgba(224, 224, 224, 0.8);
-@scrollable-bar-handle-dragging-color: rgba(200, 200, 200, 0.8);
+@scrollable-bar-handle-hovering-color: rgba(150, 150, 150, 0.6);
+@scrollable-bar-handle-dragging-color: rgba(150, 150, 150, 0.8);
 
 .@{scrollable} {
 	position: relative !important;
 	overflow: hidden !important;
 
 	&-container::-webkit-scrollbar {
-		width:0;
+		width: 0;
+		height: 0;
+		-webkit-appearance: none;
 	}
 
 	&-content {
@@ -58,8 +60,6 @@
 
 		&.is-dragging {
 			background: @scrollable-bar-dragging-color !important;
-			border-radius: @scrollable-bar-dragging-size/2;
-			border: none;
 
 			opacity: 1;
 		}
@@ -81,7 +81,14 @@
 
 		&.is-dragging &-handle {
 			background: @scrollable-bar-handle-dragging-color !important;
-			border-radius: @scrollable-bar-dragging-size/2px;
+		}
+
+		&.is-dragging, &.is-hovering {
+			border-radius: @scrollable-bar-dragging-size/2;
+
+			.@{scrollable}-bar-handle {
+				border-radius: @scrollable-bar-dragging-size/2px;
+			}
 		}
 
 		&-vertical {			
@@ -92,10 +99,12 @@
 			height: ~"calc(100% - 2*@{scrollable-bar-handle-offset})";
 		}
 
-		&-vertical.is-dragging {
-			width: @scrollable-bar-dragging-size;
+		&-vertical {
+			&.is-dragging, &.is-hovering {
+				width: @scrollable-bar-dragging-size;
 
-			margin: @scrollable-bar-handle-offset 1px;
+				margin: @scrollable-bar-handle-offset 1px;
+			}
 		}
 
 		&-vertical &-handle {
@@ -110,10 +119,12 @@
 			width: ~"calc(100% - 2*@{scrollable-bar-handle-offset})";
 		}
 
-		&-horizontal.is-dragging {
-			height: @scrollable-bar-dragging-size;
+		&-horizontal {
+			&.is-dragging, &.is-hovering {
+				height: @scrollable-bar-dragging-size;
 
-			margin: 1px @scrollable-bar-handle-offset;
+				margin: 1px @scrollable-bar-handle-offset;
+			}
 		}
 
 		&-horizontal &-handle { 
@@ -125,6 +136,5 @@
 		.@{scrollable}-bar-handle {
 			background: @scrollable-bar-handle-hovering-color;
 		}
-		
 	}
 }
