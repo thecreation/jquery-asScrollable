@@ -6,7 +6,7 @@ A jquery plugin that generate a styleable scrollbar for a block layout.
 Download the [production version][min] or the [development version][max].
 
 [min]: https://raw.github.com/amazingsurge/jquery-asScrollable/master/dist/jquery.asScrollable.all.min.js
-[max]: https://raw.github.com/amazingsurge/jquery-asScrollable/master/dist/jquery-asScrollable.all.js
+[max]: https://raw.github.com/amazingsurge/jquery-asScrollable/master/dist/jquery.asScrollable.all.js
 
 In your web page:
 
