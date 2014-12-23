@@ -47,7 +47,10 @@
 		overflow:hidden;
 		border-radius: @scrollable-bar-size/2;
 		box-sizing:border-box;
-		
+
+		user-focus: ignore;
+		user-input: disabled;
+		user-select: none;
 		-webkit-touch-callout: none;
 		-webkit-user-select: none;
 		-moz-user-select: none;
@@ -70,6 +73,7 @@
 
 		&-handle {
 			position: absolute;
+
 			top: 0;
 			left: 0;
 			line-height: 0;
@@ -140,5 +144,16 @@
 		.@{scrollable}-bar-handle {
 			background: @scrollable-bar-handle-hovering-color;
 		}
+	}
+
+	&.is-dragging {
+		user-focus: ignore;
+		user-input: disabled;
+		user-select: none;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
 	}
 }

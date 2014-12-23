@@ -1097,6 +1097,7 @@
         contentSelector: null,
         containerSelector: null,
 
+        draggingClass: 'is-dragging',
         hoveringClass: 'is-hovering',
         scrollingClass: 'is-scrolling',
 
@@ -1250,6 +1251,12 @@
 
             this.$bar.on('asScrollbar::change', function(e, api, value) {
                 self.moveTo(this.direction, conventToPercentage(value), false, true);
+            });
+
+            this.$bar.on('asScrollbar::drag', function() {
+                self.$element.addClass(self.options.draggingClass);
+            }).on('asScrollbar::dragged', function() {
+                self.$element.removeClass(self.options.draggingClass);
             });
 
             if (options.responsive) {

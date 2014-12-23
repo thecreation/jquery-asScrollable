@@ -28,6 +28,8 @@
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
           box-sizing: border-box;
+  user-focus: ignore;
+  user-input: disabled;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -105,4 +107,13 @@
 }
 .asScrollable.is-hovering .asScrollable-bar-handle {
   background: rgba(150, 150, 150, 0.6);
+}
+.asScrollable.is-dragging {
+  user-focus: ignore;
+  user-input: disabled;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
