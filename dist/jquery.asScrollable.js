@@ -9,6 +9,14 @@
     /**
      * Helper functions
      **/
+    function getTime() {
+        if (typeof window.performance !== 'undefined' && window.performance.now) {
+            return window.performance.now();
+        } else {
+            return Date.now();
+        }
+    }
+
     function isPercentage(n) {
         return typeof n === 'string' && n.indexOf('%') != -1;
     }
@@ -94,10 +102,16 @@
         // Current state information.
         this._states = {};
 
+        // Supported direction
         this.horizontal = null;
         this.vertical = null;
 
         this.$bar = null;
+
+        // Current timeout
+        this._frameId = null;
+
+        this.easing = Scrollbar.easing[this.options.easing] || Scrollbar.easing.ease;
 
         if (this.options.containerSelector) {
             this.$container = this.$element.find(this.options.containerSelector);
@@ -130,7 +144,7 @@
         showOnBarHover: false,
 
         duration: '500',
-        easing: 'swing',
+        easing: 'ease-in-out', // linear, ease-in, ease-out, ease-in-out
 
         responsive: true,
         throttle: 20,
@@ -175,7 +189,6 @@
 
             this.$container.css('overflow', 'hidden');
 
-
             if (this.vertical) {
                 this.initLayout('vertical');
                 this.createBar('vertical');
@@ -185,8 +198,6 @@
                 this.initLayout('horizontal');
                 this.createBar('horizontal');
             }
-
-
 
             this.bindEvents();
         },
@@ -256,6 +267,9 @@
             });
 
             if (options.responsive) {
+                $(window).on(this.eventName('orientationchange'), function() {
+                    self.update.call(self);
+                });
                 $(window).on(this.eventName('resize'), this.throttle(function() {
                     self.update.call(self);
                 }, options.throttle));
@@ -489,9 +503,7 @@
                 value = this.getScrollLength(direction);
             }
 
-            if (trigger !== false) {
-                this.trigger('change', value / this.getScrollLength(direction));
-            }
+
 
             var attributes = this.attributes[direction];
 
@@ -502,15 +514,44 @@
             if (sync) {
                 this.$container[0][attributes.scroll] = value;
 
+                if (trigger !== false) {
+                    this.trigger('change', value / this.getScrollLength(direction));
+                }
                 callback();
             } else {
-                var style = {};
-                style[attributes.scroll] = value;
+                self.enter('animating');
+                var startTime = getTime();
+                var start = self.getOffset(direction);
+                var end = value;
 
-                this.$container.stop().animate(style, {
-                    duration: this.options.duration,
-                    easing: this.options.easing
-                }, callback);
+                var run = function(time) {
+                    var percent = (time - startTime) / self.options.duration;
+
+                    if (percent > 1) {
+                        percent = 1;
+                    }
+
+                    percent = self.easing.fn(percent);
+
+                    var current = parseFloat(start + percent * (end - start), 10);
+                    self.$container[0][attributes.scroll] = current;
+
+                    if (trigger !== false) {
+                        self.trigger('change', value / self.getScrollLength(direction));
+                    }
+
+                    if (percent === 1) {
+                        window.cancelAnimationFrame(self._frameId);
+                        self._frameId = null;
+
+                        self.leave('animating');
+                        callback();
+                    } else {
+                        self._frameId = window.requestAnimationFrame(run);
+                    }
+                };
+
+                self._frameId = window.requestAnimationFrame(run);
             }
         },
 
