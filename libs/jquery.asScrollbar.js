@@ -1,6 +1,6 @@
 /*
  * asScrollbar
- * https://github.com/amazingSurge/jquery-asScrollable
+ * https://github.com/amazingSurge/jquery-asScrollbar
  *
  * Copyright (c) 2015 amazingSurge
  * Licensed under the GPL license.
@@ -33,7 +33,7 @@
         window.requestAnimationFrame = window[vp + 'RequestAnimationFrame'];
         window.cancelAnimationFrame = (window[vp + 'CancelAnimationFrame'] || window[vp + 'CancelRequestAnimationFrame']);
     }
-    if (/iP(ad|hone|od).*OS (6|7)/.test(window.navigator.userAgent) || !window.requestAnimationFrame || !window.cancelAnimationFrame) {
+    if (/iP(ad|hone|od).*OS (6|7|8)/.test(window.navigator.userAgent) || !window.requestAnimationFrame || !window.cancelAnimationFrame) {
         var lastTime = 0;
         window.requestAnimationFrame = function(callback) {
             var now = getTime();
@@ -150,7 +150,7 @@
 
         useCssTransforms3d: true,
         useCssTransforms: true,
-        useCssTransitions: false,
+        useCssTransitions: true,
 
         duration: '500',
         easing: 'ease' // linear, ease-in, ease-out, ease-in-out

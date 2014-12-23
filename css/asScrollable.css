@@ -2,10 +2,22 @@
   position: relative !important;
   overflow: hidden !important;
 }
+.asScrollable-container {
+  overflow: hidden !important;
+}
+.asScrollable-vertical .asScrollable-container {
+  overflow-y: scroll !important;
+}
+.asScrollable-horizontal .asScrollable-container {
+  overflow-x: scroll !important;
+}
 .asScrollable-container::-webkit-scrollbar {
   width: 0;
   height: 0;
   -webkit-appearance: none;
+}
+.asScrollable-content {
+  overflow: visible !important;
 }
 .asScrollable-content:before,
 .asScrollable-content:after {

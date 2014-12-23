@@ -16,13 +16,25 @@
 	position: relative !important;
 	overflow: hidden !important;
 
-	&-container::-webkit-scrollbar {
-		width: 0;
-		height: 0;
-		-webkit-appearance: none;
+	&-container {
+		overflow: hidden !important;
+
+		.@{scrollable}-vertical & {
+			overflow-y: scroll !important;
+		}
+		.@{scrollable}-horizontal & {
+			overflow-x: scroll !important;
+		}
+
+		&::-webkit-scrollbar {
+			width: 0;
+			height: 0;
+			-webkit-appearance: none;
+		}
 	}
 
 	&-content {
+		overflow: visible !important;
 		&:before,
 		&:after {
 			content: " ";
