@@ -100,6 +100,9 @@
 .asScrollable-bar-horizontal .asScrollable-bar-handle {
   height: 100%;
 }
+.asScrollable.is-scrolling .asScrollable-bar {
+  opacity: 1;
+}
 .asScrollable.is-hovering .asScrollable-bar-handle {
   background: rgba(150, 150, 150, 0.6);
 }

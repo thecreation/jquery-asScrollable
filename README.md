@@ -26,15 +26,16 @@ jQuery(function($) {
     containerSelector: null,
 
     hoveringClass: 'is-hovering',
+    scrollingClass: 'is-scrolling',
 
     direction: 'vertical', // vertical, horizontal, both, auto
 
     showOnHover: true,
     showOnBarHover: false,
 
-    duration: '500',
-    easing: 'swing',
-    
+    duration: 500,
+    easing: 'ease-in-out', // linear, ease-in, ease-out, ease-in-out
+
     responsive: true,
     throttle: 20,
 

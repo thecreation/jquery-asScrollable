@@ -131,7 +131,11 @@
 			height: 100%; 
 		}
 	}
-
+	&.is-scrolling {
+		.@{scrollable}-bar {
+			opacity: 1;
+		}
+	}
 	&.is-hovering {
 		.@{scrollable}-bar-handle {
 			background: @scrollable-bar-handle-hovering-color;

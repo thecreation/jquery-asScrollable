@@ -130,6 +130,14 @@ body {
 
             });
 
+            $('.example').on('asScrollable::scrolltop', function(e, api, direction){
+                console.info('top:'+direction);
+            });
+
+            $('.example').on('asScrollable::scrollend', function(e, api, direction){
+                console.info('end:'+direction);
+            });
+
             $('.api-move-to').on('click', function(){
                 var to = $(this).data('to');
 

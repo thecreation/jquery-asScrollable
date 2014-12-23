@@ -115,6 +115,8 @@
         // Current timeout
         this._frameId = null;
 
+        this._timeoutId = null;
+
         this.easing = Scrollbar.easing[this.options.easing] || Scrollbar.easing.ease;
 
         if (this.options.containerSelector) {
@@ -141,13 +143,14 @@
         containerSelector: null,
 
         hoveringClass: 'is-hovering',
+        scrollingClass: 'is-scrolling',
 
         direction: 'vertical', // vertical, horizontal, both, auto
 
         showOnHover: true,
         showOnBarHover: false,
 
-        duration: '500',
+        duration: 500,
         easing: 'ease-in-out', // linear, ease-in, ease-out, ease-in-out
 
         responsive: true,
@@ -246,6 +249,13 @@
 
                     if (oldLeft !== self.offsetLeft) {
                         self.trigger('scroll', self.getPercentOffset('horizontal'), 'horizontal');
+
+                        if (self.offsetLeft === 0) {
+                            self.trigger('scrolltop', 'horizontal');
+                        }
+                        if (self.offsetLeft === self.getScrollLength('horizontal')) {
+                            self.trigger('scrollend', 'horizontal');
+                        }
                     }
                 }
 
@@ -256,14 +266,31 @@
 
                     if (oldTop !== self.offsetTop) {
                         self.trigger('scroll', self.getPercentOffset('vertical'), 'vertical');
+
+                        if (self.offsetTop === 0) {
+                            self.trigger('scrolltop', 'vertical');
+                        }
+                        if (self.offsetTop === self.getScrollLength('vertical')) {
+                            self.trigger('scrollend', 'vertical');
+                        }
                     }
                 }
             });
 
             this.$element.on(pluginName + '::scroll', function(e, api, value, direction) {
+                if (!self.is('scrolling')) {
+                    self.enter('scrolling');
+                    self.$element.addClass(self.options.scrollingClass);
+                }
                 var bar = api.getBarApi(direction);
 
                 bar.moveTo(conventToPercentage(value), false, true);
+
+                clearTimeout(self._timeoutId);
+                self._timeoutId = setTimeout(function() {
+                    self.$element.removeClass(self.options.scrollingClass);
+                    self.leave('scrolling');
+                }, 200);
             });
 
             this.$bar.on('asScrollbar::change', function(e, api, value) {
@@ -506,8 +533,6 @@
             } else if (value > this.getScrollLength(direction)) {
                 value = this.getScrollLength(direction);
             }
-
-
 
             var attributes = this.attributes[direction];
 
