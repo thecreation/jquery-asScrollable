@@ -1,6 +1,6 @@
-/*! jQuery asScrollable - v0.2.0 - 2014-12-24
+/*! jQuery asScrollable - v0.2.1 - 2015-03-05
 * https://github.com/amazingSurge/jquery-asScrollable
-* Copyright (c) 2014 amazingSurge; Licensed GPL */
+* Copyright (c) 2015 amazingSurge; Licensed GPL */
 (function(window, document, $, Scrollbar, undefined) {
     "use strict";
 
@@ -111,8 +111,11 @@
 
         // Current timeout
         this._frameId = null;
-
         this._timeoutId = null;
+
+        // Current length
+        this._containerLength = {};
+        this._scrollLength = {};
 
         this.easing = Scrollbar.easing[this.options.easing] || Scrollbar.easing.ease;
 
@@ -643,14 +646,19 @@
         },
 
         update: function() {
-            if (this.vertical) {
+            if (this.vertical && this.isLayoutChange('vertical')) {
                 this.initLayout('vertical');
                 this.updateBarHandle('vertical');
             }
-            if (this.horizontal) {
-                this.initLayout('vertical');
+            if (this.horizontal && this.isLayoutChange('horizontal')) {
+                this.initLayout('horizontal');
                 this.updateBarHandle('horizontal');
             }
+        },
+
+        isLayoutChange: function(direction) {
+            return this.getScrollLength(direction) !== this._scrollLength[direction] ||
+                this.getContainerLength(direction) !== this._containerLength[direction];
         },
 
         updateBarHandle: function(direction) {
@@ -659,11 +667,14 @@
             var scrollLength = this.getScrollLength(direction),
                 containerLength = this.getContainerLength(direction);
 
+            this._scrollLength[direction] = scrollLength;
+            this._containerLength[direction] = containerLength;
+
             if (scrollLength > 0) {
                 if (api.is('disabled')) {
                     api.enable();
                 }
-                api.setHandleLength(api.getBarLength() * containerLength / (scrollLength + containerLength));
+                api.setHandleLength(api.getBarLength() * containerLength / (scrollLength + containerLength), true);
             } else {
                 api.disable();
             }
@@ -712,18 +723,24 @@
 
     $.fn[pluginName] = function(options) {
         if (typeof options === 'string') {
-            var args = Array.prototype.slice.call(arguments, 1);
-            this.each(function() {
-                var instance = $(this).data(pluginName);
-                if (!instance) {
-                    return false;
+            var method = options;
+            var method_arguments = Array.prototype.slice.call(arguments, 1);
+
+            if (/^\_/.test(method)) {
+                return false;
+            } else if ((/^(get)/.test(method))) {
+                var api = this.first().data(pluginName);
+                if (api && typeof api[method] === 'function') {
+                    return api[method].apply(api, method_arguments);
                 }
-                if (!$.isFunction(instance[options]) || options.charAt(0) === "_") {
-                    return false;
-                }
-                // apply method
-                instance[options].apply(instance, args);
-            });
+            } else {
+                return this.each(function() {
+                    var api = $.data(this, pluginName);
+                    if (api && typeof api[method] === 'function') {
+                        api[method].apply(api, method_arguments);
+                    }
+                });
+            }
         } else {
             return this.each(function() {
                 if (!$(this).data(pluginName)) {

@@ -3,6 +3,9 @@
 }
 .asScrollable-container {
   overflow: hidden !important;
+  -webkit-box-sizing: content-box !important;
+     -moz-box-sizing: content-box !important;
+          box-sizing: content-box !important;
 }
 .asScrollable-vertical .asScrollable-container {
   overflow-y: scroll !important;
@@ -65,6 +68,9 @@
   display: none;
 }
 .asScrollable-bar-handle {
+  -webkit-transition: width,height 0.5s;
+       -o-transition: width,height 0.5s;
+          transition: width,height 0.5s;
   position: absolute;
   top: 0;
   left: 0;

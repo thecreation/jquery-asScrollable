@@ -17,6 +17,7 @@
 
 	&-container {
 		overflow: hidden !important;
+        box-sizing: content-box !important;
 
 		.@{scrollable}-vertical & {
 			overflow-y: scroll !important;
@@ -84,6 +85,7 @@
 		}
 
 		&-handle {
+			transition: width,height 0.5s;
 			position: absolute;
 
 			top: 0;
