@@ -120,13 +120,24 @@
 
         this.easing = Scrollbar.easing[this.options.easing] || Scrollbar.easing.ease;
 
+        var position = this.$element.css('position');
         if (this.options.containerSelector) {
             this.$container = this.$element.find(this.options.containerSelector);
             this.$wrap = this.$element;
+
+            if (position == 'static') {
+                this.$wrap.css('position', 'relative');
+            }
         } else {
             this.$container = this.$element.wrap('<div>');
             this.$wrap = this.$container.parent();
             this.$wrap.height(this.$element.height());
+
+            if (position !== 'static') {
+                this.$wrap.css('position', position);
+            } else {
+                this.$wrap.css('position', 'relative');
+            }
         }
 
         if (this.options.contentSelector) {

@@ -13,7 +13,6 @@
 @scrollable-bar-handle-dragging-color: rgba(150, 150, 150, 0.8);
 
 .@{scrollable} {
-	position: relative !important;
 	overflow: hidden !important;
 
 	&-container {
@@ -34,6 +33,7 @@
 	}
 
 	&-content {
+		position: relative !important;
 		overflow: visible !important;
 		&:before,
 		&:after {

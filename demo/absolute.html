@@ -1,0 +1,123 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>jQuery asScrollable</title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="css/normalize.css">
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="../css/asScrollable.css">
+
+<style type="text/css">
+body {
+    background-color: #f7f7f7;
+}
+.section {
+	padding: 20px;
+}
+.inner {
+    margin: 0 auto;
+    max-width: 960px;
+}
+.example {
+    top: 200px;
+    position: absolute;
+    width: 500px;
+    height: 200px;
+
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    -webkit-box-shadow: 1px 1px 2px 0px rgba(200, 200, 200, 0.3);
+    -moz-box-shadow:    1px 1px 2px 0px rgba(200, 200, 200, 0.3);
+    box-shadow:         1px 1px 2px 0px rgba(200, 200, 200, 0.3);
+    background-color: #fefefe;
+}
+</style>
+</head>
+<body>
+    <!--[if lt IE 8]>
+        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+    <div class="section">
+    	<div class="inner">
+            <section>
+                <h3>absolute Scrollable</h3>
+                <div class="example" data-options='{"direction": "both", "contentSelector": ">", "containerSelector": ">"}'>
+                    <div>
+                        <div>
+                            <img data-src="holder.js/1500x400/sky" width="1500" height="400" />
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+           
+            <section>
+                <div>
+                    <button class="api-scroll-to" data-to="0">Scroll to 0</button>
+                    <button class="api-scroll-to" data-to="50">Scroll to 50</button>
+                    <button class="api-scroll-to" data-to="0%">Scroll to 0%</button>
+                    <button class="api-scroll-to" data-to="100%">Scroll to 100%</button>
+                    <button class="api-scroll-to" data-to="50%">Scroll to 50%</button>
+                </div>
+                <div>
+                    <button class="api-scroll-by" data-by="10">Scroll by 10</button>
+                    <button class="api-scroll-by" data-by="+10">Scroll by +10</button>
+                    <button class="api-scroll-by" data-by="-10">Scroll by -10</button>
+                    <button class="api-scroll-by" data-by="10%">Scroll by 10%</button>
+                    <button class="api-scroll-by" data-by="+10%">Scroll by +10%</button>
+                    <button class="api-scroll-by" data-by="-10%">Scroll by -10%</button>
+                </div>
+                <div>
+                    <button class="api-init">Init</button>
+                    <button class="api-destory">Destory</button>
+                </div>
+            </section>
+    	</div>
+    </div>
+    <script src="../libs/jquery.min.js"></script>
+    <script src="../libs/jquery.mousewheel.min.js"></script>
+    <script src="../libs/jquery.asScrollbar.js"></script>
+    <script src="../libs/holder.js"></script>
+    <script src="../src/jquery.asScrollable.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function(){
+
+            Holder.run();
+
+            $('.example').asScrollable();
+
+            $('.example').on('asScrollable::scrolltop', function(e, api, direction){
+                console.info('top:'+direction);
+            });
+
+            $('.example').on('asScrollable::scrollend', function(e, api, direction){
+                console.info('end:'+direction);
+            });
+
+            $('.api-scroll-to').on('click', function(){
+                var to = $(this).data('to');
+
+                $('.box').asScrollable('scrollTo', 'vertical', to);
+                $('.box').asScrollable('scrollTo', 'horizontal', to);
+            });
+
+            $('.api-scroll-by').on('click', function(){
+                var to = $(this).data('by');
+                $('.box').asScrollable('scrollBy', 'horizontal', to);
+                $('.box').asScrollable('scrollBy', 'vertical', to);
+            });
+
+            $('.api-init').on('click', function(){
+                 $('.box').asScrollable();
+            });
+            $('.api-destory').on('click', function(){
+                 $('.box').asScrollable('destory');
+            });
+        });
+    </script>
+</body>
+</html>
