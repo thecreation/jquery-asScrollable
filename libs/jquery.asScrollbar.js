@@ -1,6 +1,6 @@
 /*
  * asScrollbar
- * https://github.com/amazingSurge/jquery-asScrollbar
+ * https://github.com/amazingSurge/jquery-asScrollable
  *
  * Copyright (c) 2015 amazingSurge
  * Licensed under the GPL license.
@@ -697,15 +697,24 @@
                     length = this.options.maxHandleLength;
                 }
                 this.$handle.css(this.attributes.length, length);
-            }
-            if (update !== false) {
-                this.updateLength();
+
+                if (update !== false) {
+                    this.updateLength(length);
+                }
             }
         },
 
-        updateLength: function() {
-            this.handleLength = this.getHandleLenght();
-            this.barLength = this.getBarLength();
+        updateLength: function(length, barLength) {
+            if (typeof length !== 'undefined') {
+                this.handleLength = length;
+            } else {
+                this.handleLength = this.getHandleLenght();
+            }
+            if (typeof barLength !== 'undefined') {
+                this.barLength = barLength;
+            } else {
+                this.barLength = this.getBarLength();
+            }
         },
 
         getBarLength: function() {
