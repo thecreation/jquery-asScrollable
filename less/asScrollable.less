@@ -58,7 +58,7 @@
 			display: none;
 		}
 
-		transition: opacity 1s;
+		transition: opacity 0.5s;
 		&-hide {
 			transition-delay: 400ms;
 			opacity: 0;
@@ -163,6 +163,7 @@
 	}
 	&.is-scrolling {
 		.@{scrollable}-bar {
+			transition: opacity 0;
 			opacity: 1;
 		}
 	}
