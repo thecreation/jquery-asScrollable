@@ -1,4 +1,4 @@
-/*! jQuery asScrollable - v0.2.1 - 2015-03-06
+/*! jQuery asScrollable - v0.2.1 - 2015-03-07
 * https://github.com/amazingSurge/jquery-asScrollable
 * Copyright (c) 2015 amazingSurge; Licensed GPL */
 (function(window, document, $, undefined) {

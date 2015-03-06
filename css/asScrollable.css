@@ -7,10 +7,10 @@
      -moz-box-sizing: content-box !important;
           box-sizing: content-box !important;
 }
-.asScrollable-vertical .asScrollable-container {
+.asScrollable-vertical.is-hovering .asScrollable-container {
   overflow-y: scroll !important;
 }
-.asScrollable-horizontal .asScrollable-container {
+.asScrollable-horizontal.is-hovering .asScrollable-container {
   overflow-x: scroll !important;
 }
 .asScrollable-container::-webkit-scrollbar {
@@ -19,6 +19,7 @@
   -webkit-appearance: none;
 }
 .asScrollable-content {
+  position: relative !important;
   overflow: visible !important;
 }
 .asScrollable-content:before,
