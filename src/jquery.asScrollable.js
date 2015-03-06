@@ -117,19 +117,26 @@
         this._frameId = null;
         this._timeoutId = null;
 
-        // Current length
-        this._containerLength = {};
-        this._scrollLength = {};
-
         this.easing = Scrollbar.easing[this.options.easing] || Scrollbar.easing.ease;
 
+        var position = this.$element.css('position');
         if (this.options.containerSelector) {
             this.$container = this.$element.find(this.options.containerSelector);
             this.$wrap = this.$element;
+
+            if (position == 'static') {
+                this.$wrap.css('position', 'relative');
+            }
         } else {
             this.$container = this.$element.wrap('<div>');
             this.$wrap = this.$container.parent();
             this.$wrap.height(this.$element.height());
+
+            if (position !== 'static') {
+                this.$wrap.css('position', position);
+            } else {
+                this.$wrap.css('position', 'relative');
+            }
         }
 
         if (this.options.contentSelector) {
@@ -336,9 +343,11 @@
 
             // this.$container.css(attributes.overflow, 'scroll');
 
-            var scrollbarWidth = this.getBrowserScrollbarWidth(direction);
+            var scrollbarWidth = this.getBrowserScrollbarWidth(direction),
+                parentLength = container.parentNode[attributes.crossClientLength];
 
-            this.$container.css(attributes.crossLength, scrollbarWidth + container.parentNode[attributes.crossClientLength] + 'px');
+            this.$content.css(attributes.crossLength, parentLength + 'px');
+            this.$container.css(attributes.crossLength, scrollbarWidth + parentLength + 'px');
 
             if (scrollbarWidth === 0 && isFFLionScrollbar) {
                 this.$container.css(attributes.ffPadding, 16);
@@ -650,19 +659,14 @@
         },
 
         update: function() {
-            if (this.vertical && this.isLayoutChange('vertical')) {
+            if (this.vertical) {
                 this.initLayout('vertical');
                 this.updateBarHandle('vertical');
             }
-            if (this.horizontal && this.isLayoutChange('horizontal')) {
+            if (this.horizontal) {
                 this.initLayout('horizontal');
                 this.updateBarHandle('horizontal');
             }
-        },
-
-        isLayoutChange: function(direction) {
-            return this.getScrollLength(direction) !== this._scrollLength[direction] ||
-                this.getContainerLength(direction) !== this._containerLength[direction];
         },
 
         updateBarHandle: function(direction) {
@@ -670,9 +674,6 @@
 
             var scrollLength = this.getScrollLength(direction),
                 containerLength = this.getContainerLength(direction);
-
-            this._scrollLength[direction] = scrollLength;
-            this._containerLength[direction] = containerLength;
 
             if (scrollLength > 0) {
                 if (api.is('disabled')) {

@@ -19,7 +19,6 @@
   -webkit-appearance: none;
 }
 .asScrollable-content {
-  position: relative !important;
   overflow: visible !important;
 }
 .asScrollable-content:before,
