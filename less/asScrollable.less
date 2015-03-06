@@ -13,39 +13,51 @@
 @scrollable-bar-handle-dragging-color: rgba(150, 150, 150, 0.8);
 
 .@{scrollable} {
-	overflow: hidden !important;
-
-	&-container {
+	&.is-enabled {
 		overflow: hidden !important;
-        box-sizing: content-box !important;
+	}
+	
+	&-container {
+		.is-enabled & {
+			overflow: hidden !important;
+	        box-sizing: content-box !important;
+	    }
 
-		.@{scrollable}-vertical.is-hovering & {
-			overflow-y: scroll !important;
-		}
-		.@{scrollable}-horizontal.is-hovering & {
-			overflow-x: scroll !important;
-		}
-
-		&::-webkit-scrollbar {
+	    .is-enabled &::-webkit-scrollbar {
 			width: 0;
 			height: 0;
 			-webkit-appearance: none;
 		}
+
+		.@{scrollable}-vertical.is-enabled & {
+			 & {
+				overflow-y: scroll !important;
+			}
+		}
+		.@{scrollable}-horizontal.is-enabled & {
+			overflow-x: scroll !important;
+		}
 	}
 
 	&-content {
-		position: relative !important;
-		overflow: visible !important;
-		&:before,
-		&:after {
-			content: " ";
-			display: table;
-		}
-		&:after {
-			clear: both;
+		.is-enabled & {
+			position: relative !important;
+			overflow: visible !important;
+			&:before,
+			&:after {
+				content: " ";
+				display: table;
+			}
+			&:after {
+				clear: both;
+			}
 		}
 	}
 	&-bar {
+		.is-disabled & {
+			display: none;
+		}
+
 		transition: opacity 1s;
 		&-hide {
 			transition-delay: 400ms;

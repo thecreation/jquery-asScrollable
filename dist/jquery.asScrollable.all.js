@@ -1,4 +1,4 @@
-/*! jQuery asScrollable - v0.2.1 - 2015-03-07
+/*! jQuery asScrollable - v0.3.0 - 2015-03-07
 * https://github.com/amazingSurge/jquery-asScrollable
 * Copyright (c) 2015 amazingSurge; Licensed GPL */
 (function(window, document, $, undefined) {
@@ -973,6 +973,7 @@
     "use strict";
 
     var pluginName = 'asScrollable';
+    var instanceId = 0;
 
     /**
      * Helper functions
@@ -1081,6 +1082,10 @@
         this._frameId = null;
         this._timeoutId = null;
 
+        this.disabled = null;
+
+        this.instanceId = (++instanceId);
+
         this.easing = Scrollbar.easing[this.options.easing] || Scrollbar.easing.ease;
 
         var position = this.$element.css('position');
@@ -1114,10 +1119,13 @@
     };
 
     Plugin.defaults = {
-        namespace: 'asScrollable',
+        namespace: pluginName,
 
         contentSelector: null,
         containerSelector: null,
+
+        enabledClass: 'is-enabled',
+        disabledClass: 'is-disabled',
 
         draggingClass: 'is-dragging',
         hoveringClass: 'is-hovering',
@@ -1177,8 +1185,6 @@
                 this.$wrap.addClass(this.classes.skin);
             }
 
-            // this.$container.css('overflow', 'hidden');
-
             if (this.vertical) {
                 this.$wrap.addClass(this.classes.wrap + '-vertical');
                 this.initLayout('vertical');
@@ -1191,12 +1197,30 @@
                 this.createBar('horizontal');
             }
 
+            // this.$container.css('overflow', 'hidden');
+
             this.bindEvents();
+
+            this.disabled = false;
+            this.$wrap.addClass(this.options.enabledClass);
         },
 
         bindEvents: function() {
             var self = this;
             var options = this.options;
+
+            if (options.responsive) {
+                $(window).on(this.eventNameWithId('orientationchange'), function() {
+                    self.update.call(self);
+                });
+                $(window).on(this.eventNameWithId('resize'), this.throttle(function() {
+                    self.update.call(self);
+                }, options.throttle));
+            }
+
+            if (!this.horizontal && !this.vertical) {
+                return;
+            }
 
             this.$wrap.on(this.eventName('mouseenter'), function() {
                 self.$wrap.addClass(self.options.hoveringClass);
@@ -1287,15 +1311,13 @@
             }).on('asScrollbar::dragged', function() {
                 self.$wrap.removeClass(self.options.draggingClass);
             });
+        },
 
-            if (options.responsive) {
-                $(window).on(this.eventName('orientationchange'), function() {
-                    self.update.call(self);
-                });
-                $(window).on(this.eventName('resize'), this.throttle(function() {
-                    self.update.call(self);
-                }, options.throttle));
-            }
+        unbindEvents: function() {
+            this.$wrap.off(this.eventName());
+            this.$element.off(pluginName + '::scroll').off(pluginName + '::hover').off(pluginName + '::hovered');
+            this.$container.off(this.eventName());
+            $(window).off(this.eventNameWithId());
         },
 
         initLayout: function(direction) {
@@ -1393,11 +1415,24 @@
             if (typeof events !== 'string' || events === '') {
                 return '.' + this.options.namespace;
             }
-            events = events.split(' ');
 
+            events = events.split(' ');
             var length = events.length;
             for (var i = 0; i < length; i++) {
                 events[i] = events[i] + '.' + this.options.namespace;
+            }
+            return events.join(' ');
+        },
+
+        eventNameWithId: function(events) {
+            if (typeof events !== 'string' || events === '') {
+                return this.options.namespace + '-' + this.instanceId;
+            }
+
+            events = events.split(' ');
+            var length = events.length;
+            for (var i = 0; i < length; i++) {
+                events[i] = events[i] + '.' + this.options.namespace + '-' + this.instanceId;
             }
             return events.join(' ');
         },
@@ -1622,17 +1657,6 @@
             this.getBar(direction).addClass(this.classes.barHide);
         },
 
-        update: function() {
-            if (this.vertical) {
-                this.initLayout('vertical');
-                this.updateBarHandle('vertical');
-            }
-            if (this.horizontal) {
-                this.initLayout('horizontal');
-                this.updateBarHandle('horizontal');
-            }
-        },
-
         updateBarHandle: function(direction) {
             var api = this.getBarApi(direction);
 
@@ -1649,33 +1673,78 @@
             }
         },
 
-        destory: function() {
-            this.$wrap.removeClass(this.classes.wrap);
-            if (this.horizontal) {
-                this.$wrap.removeClass(this.classes.wrap + '-horizontal');
+        disable: function() {
+            if (true !== this.disabled) {
+                this.disabled = true;
+                this.$wrap.addClass(this.options.disabledClass).removeClass(this.options.enabledClass);
 
+                this.unbindEvents();
+                this.unStyle();
+            }
+        },
+
+        enable: function() {
+            if (false !== this.disabled) {
+                this.disabled = false;
+                this.$wrap.addClass(this.options.enabledClass).removeClass(this.options.disabledClass);
+
+                this.bindEvents();
+                this.update();
+            }
+        },
+
+        update: function() {
+            if (this.vertical) {
+                this.initLayout('vertical');
+                this.updateBarHandle('vertical');
+            }
+            if (this.horizontal) {
+                this.initLayout('horizontal');
+                this.updateBarHandle('horizontal');
+            }
+        },
+        unStyle: function() {
+            if (this.horizontal) {
                 this.$container.css({
                     'height': '',
                     'padding-bottom': ''
-                });
-            }
-            if (this.vertical) {
-                this.$wrap.removeClass(this.classes.wrap + '-vertical');
-                this.$container.css({
-                    'width': '',
-                    'padding-right': ''
                 });
                 this.$content.css({
                     'height': ''
                 });
             }
+            if (this.vertical) {
+
+                this.$container.css({
+                    'width': '',
+                    'padding-right': ''
+                });
+                this.$content.css({
+                    'height': '',
+                    'width': ''
+                });
+            }
+            if (!this.options.containerSelector) {
+                this.$wrap.css({
+                    'height': ''
+                });
+            }
+        },
+
+        destory: function() {
+            this.$wrap.removeClass(this.classes.wrap + '-vertical')
+                .removeClass(this.classes.wrap + '-horizontal')
+                .removeClass(this.classes.wrap)
+                .removeClass(this.options.enabledClass)
+                .removeClass(this.classes.disabledClass);
+            this.unStyle();
+
             if (this.$bar) {
                 this.$bar.remove();
             }
 
-            this.$wrap.off(this.eventName());
-            this.$element.off(pluginName + '::scroll');
-            this.$container.off(this.eventName());
+            this.unbindEvents();
+
 
             if (this.options.containerSelector) {
                 this.$container.removeClass(this.classes.container);

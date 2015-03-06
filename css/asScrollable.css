@@ -1,33 +1,33 @@
-.asScrollable {
+.asScrollable.is-enabled {
   overflow: hidden !important;
 }
-.asScrollable-container {
+.is-enabled .asScrollable-container {
   overflow: hidden !important;
   -webkit-box-sizing: content-box !important;
      -moz-box-sizing: content-box !important;
           box-sizing: content-box !important;
 }
-.asScrollable-vertical.is-hovering .asScrollable-container {
-  overflow-y: scroll !important;
-}
-.asScrollable-horizontal.is-hovering .asScrollable-container {
-  overflow-x: scroll !important;
-}
-.asScrollable-container::-webkit-scrollbar {
+.is-enabled .asScrollable-container::-webkit-scrollbar {
   width: 0;
   height: 0;
   -webkit-appearance: none;
 }
-.asScrollable-content {
+.asScrollable-vertical.is-enabled .asScrollable-container {
+  overflow-y: scroll !important;
+}
+.asScrollable-horizontal.is-enabled .asScrollable-container {
+  overflow-x: scroll !important;
+}
+.is-enabled .asScrollable-content {
   position: relative !important;
   overflow: visible !important;
 }
-.asScrollable-content:before,
-.asScrollable-content:after {
+.is-enabled .asScrollable-content:before,
+.is-enabled .asScrollable-content:after {
   content: " ";
   display: table;
 }
-.asScrollable-content:after {
+.is-enabled .asScrollable-content:after {
   clear: both;
 }
 .asScrollable-bar {
@@ -50,6 +50,9 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+}
+.is-disabled .asScrollable-bar {
+  display: none;
 }
 .asScrollable-bar-hide {
   -webkit-transition-delay: 400ms;

@@ -166,6 +166,8 @@ body {
                 </div>
                 <div>
                     <button class="api-init">Init</button>
+                    <button class="api-enable">enable</button>
+                    <button class="api-disable">disable</button>
                     <button class="api-destory">Destory</button>
                 </div>
             </section>
@@ -206,6 +208,12 @@ body {
 
             $('.api-init').on('click', function(){
                  $('.box').asScrollable();
+            });
+            $('.api-enable').on('click', function(){
+                 $('.box').asScrollable('enable');
+            });
+            $('.api-disable').on('click', function(){
+                 $('.box').asScrollable('disable');
             });
             $('.api-destory').on('click', function(){
                  $('.box').asScrollable('destory');
