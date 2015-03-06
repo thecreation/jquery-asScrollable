@@ -730,6 +730,9 @@
         },
 
         update: function() {
+            if (this.disabled) {
+                return;
+            }
             if (this.vertical) {
                 this.initLayout('vertical');
                 this.updateBarHandle('vertical');
