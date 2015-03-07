@@ -1082,8 +1082,6 @@
         this._frameId = null;
         this._timeoutId = null;
 
-        this.disabled = null;
-
         this.instanceId = (++instanceId);
 
         this.easing = Scrollbar.easing[this.options.easing] || Scrollbar.easing.ease;
@@ -1185,6 +1183,8 @@
                 this.$wrap.addClass(this.classes.skin);
             }
 
+            this.$wrap.addClass(this.options.enabledClass);
+
             if (this.vertical) {
                 this.$wrap.addClass(this.classes.wrap + '-vertical');
                 this.initLayout('vertical');
@@ -1197,12 +1197,7 @@
                 this.createBar('horizontal');
             }
 
-            // this.$container.css('overflow', 'hidden');
-
             this.bindEvents();
-
-            this.disabled = false;
-            this.$wrap.addClass(this.options.enabledClass);
         },
 
         bindEvents: function() {
@@ -1674,8 +1669,8 @@
         },
 
         disable: function() {
-            if (true !== this.disabled) {
-                this.disabled = true;
+            if (!this.is('disabled')) {
+                this.enter('disabled');
                 this.$wrap.addClass(this.options.disabledClass).removeClass(this.options.enabledClass);
 
                 this.unbindEvents();
@@ -1684,8 +1679,8 @@
         },
 
         enable: function() {
-            if (false !== this.disabled) {
-                this.disabled = false;
+            if (this.is('disabled')) {
+                this.leave('disabled');
                 this.$wrap.addClass(this.options.enabledClass).removeClass(this.options.disabledClass);
 
                 this.bindEvents();
@@ -1694,7 +1689,7 @@
         },
 
         update: function() {
-            if (this.disabled) {
+            if (this.is('disabled')) {
                 return;
             }
             if (this.vertical) {
