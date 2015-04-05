@@ -203,14 +203,27 @@
         function test(property, prefixed) {
             var result = false,
                 upper = property.charAt(0).toUpperCase() + property.slice(1);
-            $.each((property + ' ' + prefixes.join(upper + ' ') + upper).split(' '), function(i, property) {
-                if (style[property] !== undefined) {
-                    result = prefixed ? property : true;
-                    return false;
-                }
-            });
 
-            return result;
+            if (style[property] !== undefined) {
+                result = property;
+            }
+            if (!result) {
+                $.each(prefixes, function(i, prefix) {
+                    if (style[prefix + upper] !== undefined) {
+                        result = '-' + prefix.toLowerCase() + '-' + upper;
+                        return false;
+                    }
+                });
+            }
+
+            if (prefixed) {
+                return result;
+            }
+            if (result) {
+                return true;
+            } else {
+                return false;
+            }
         }
 
         function prefixed(property) {
@@ -729,11 +742,8 @@
             var value;
 
             if (this.options.useCssTransforms && support.transform) {
-                if (this.options.useCssTransforms3d && support.transform3d) {
-                    value = convertMatrixToArray(this.$handle.css(support.transform));
-                } else {
-                    value = convertMatrixToArray(this.$handle.css(support.transform));
-                }
+                value = convertMatrixToArray(this.$handle.css(support.transform));
+
                 if (!value) {
                     return 0;
                 }
@@ -751,8 +761,8 @@
         },
 
         makeHandlePositionStyle: function(value) {
-            var property, x = '0px',
-                y = '0px';
+            var property, x = '0',
+                y = '0';
 
             if (this.options.useCssTransforms && support.transform) {
                 if (this.attributes.axis === 'X') {
@@ -764,7 +774,7 @@
                 property = support.transform.toString();
 
                 if (this.options.useCssTransforms3d && support.transform3d) {
-                    value = "translate3d(" + x + "," + y + ",0px)";
+                    value = "translate3d(" + x + "," + y + ",0)";
                 } else {
                     value = "translate(" + x + "," + y + ")";
                 }
