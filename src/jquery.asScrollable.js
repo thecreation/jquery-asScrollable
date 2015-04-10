@@ -155,6 +155,8 @@
     Plugin.defaults = {
         namespace: pluginName,
 
+        skin: null,
+
         contentSelector: null,
         containerSelector: null,
 
