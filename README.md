@@ -5,8 +5,8 @@ A jquery plugin that make a block element scrollable.
 ## Getting Started
 Download the [production version][min] or the [development version][max].
 
-[min]: https://raw.github.com/amazingsurge/jquery-asScrollable/master/dist/jquery.asScrollable.all.min.js
-[max]: https://raw.github.com/amazingsurge/jquery-asScrollable/master/dist/jquery.asScrollable.all.js
+[min]: https://raw.github.com/amazingSurge/jquery-asScrollable/master/dist/jquery.asScrollable.all.min.js
+[max]: https://raw.github.com/amazingSurge/jquery-asScrollable/master/dist/jquery.asScrollable.all.js
 
 In your web page:
 

@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/amazingSurge/jquery-asScrollable.git"
+    "url": "git@github.com:amazingSurge/jquery-asScrollable.git"
   },
   "bugs": "https://github.com/amazingSurge/jquery-asScrollable/issues",
   "licenses": [
@@ -21,7 +21,7 @@
     }
   ],
   "engines": {
-    "node": ">= 0.8.0"
+    "node": ">=0.10.0"
   },
   "devDependencies": {
     "grunt": "*",
