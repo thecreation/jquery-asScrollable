@@ -1,4 +1,4 @@
-/*! jQuery asScrollable - v0.3.0 - 2015-04-10
+/*! jQuery asScrollable - v0.3.1 - 2015-06-15
 * https://github.com/amazingSurge/jquery-asScrollable
 * Copyright (c) 2015 amazingSurge; Licensed GPL */
 (function(window, document, $, Scrollbar, undefined) {
@@ -351,7 +351,7 @@
 
         initLayout: function(direction) {
             if (direction === 'vertical') {
-                this.$content.css('height', this.$wrap.height());
+                this.$container.css('height', this.$wrap.height());
             }
             var attributes = this.attributes[direction],
                 container = this.$container[0];
@@ -746,13 +746,12 @@
                 });
             }
             if (this.vertical) {
-
                 this.$container.css({
                     'width': '',
+                    'height': '',
                     'padding-right': ''
                 });
                 this.$content.css({
-                    'height': '',
                     'width': ''
                 });
             }

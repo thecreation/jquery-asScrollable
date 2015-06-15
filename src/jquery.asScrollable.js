@@ -355,7 +355,7 @@
 
         initLayout: function(direction) {
             if (direction === 'vertical') {
-                this.$content.css('height', this.$wrap.height());
+                this.$container.css('height', this.$wrap.height());
             }
             var attributes = this.attributes[direction],
                 container = this.$container[0];
@@ -750,13 +750,12 @@
                 });
             }
             if (this.vertical) {
-
                 this.$container.css({
                     'width': '',
+                    'height': '',
                     'padding-right': ''
                 });
                 this.$content.css({
-                    'height': '',
                     'width': ''
                 });
             }
