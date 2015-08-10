@@ -693,6 +693,10 @@
         updateBarHandle: function(direction) {
             var api = this.getBarApi(direction);
 
+            if (!api) {
+                return;
+            }
+
             var scrollLength = this.getScrollLength(direction),
                 containerLength = this.getContainerLength(direction);
 
