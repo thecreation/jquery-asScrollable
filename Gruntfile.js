@@ -49,6 +49,21 @@ module.exports = function(grunt) {
                 dest: 'dist/jquery.asScrollable.all.min.js',
             }
         },
+        babel: {
+            options: {
+                sourceMap: false,
+                presets: ["es2015"],
+                plugins: ["transform-es2015-modules-umd","external-helpers-2"]
+            },
+            dist: {
+                files: [{
+                    expand: true,
+                    cwd: 'src/',
+                    src: ['**/*.js'],
+                    dest: 'dist/'
+                }]
+            }
+        },
 
         // -- copy config -------------------------------------------------------
         copy: {

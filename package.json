@@ -14,12 +14,10 @@
     "url": "git@github.com:amazingSurge/jquery-asScrollable.git"
   },
   "bugs": "https://github.com/amazingSurge/jquery-asScrollable/issues",
-  "licenses": [
-    {
-      "type": "GPL",
-      "url": "https://github.com/amazingSurge/jquery-asScrollable/blob/master/LICENSE-GPL"
-    }
-  ],
+  "licenses": [{
+    "type": "GPL",
+    "url": "https://github.com/amazingSurge/jquery-asScrollable/blob/master/LICENSE-GPL"
+  }],
   "engines": {
     "node": ">=0.10.0"
   },
@@ -35,6 +33,10 @@
     "grunt-contrib-watch": "*",
     "grunt-jsbeautifier": "*",
     "grunt-text-replace": "*",
-    "load-grunt-tasks": "*"
+    "load-grunt-tasks": "*",
+    "grunt-babel": "^6.0.0",
+    "babel-plugin-transform-es2015-modules-umd": "^6.1.18",
+    "babel-preset-es2015": "^6.0.11",
+    "babel-plugin-external-helpers-2":"*"
   }
 }
