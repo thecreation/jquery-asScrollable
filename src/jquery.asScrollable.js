@@ -459,7 +459,9 @@
 
         eventNameWithId: function(events) {
             if (typeof events !== 'string' || events === '') {
-                return this.options.namespace + '-' + this.instanceId;
+                // patch by adding a '.' in front, so that event can be
+                // unbind properly later
+                return '.' + this.options.namespace + '-' + this.instanceId;
             }
 
             events = events.split(' ');
