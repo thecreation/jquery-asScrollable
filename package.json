@@ -6,7 +6,7 @@
   "homepage": "https://github.com/amazingSurge/jquery-asScrollable",
   "author": {
     "name": "amazingSurge",
-    "email": "amazingSurge@yahoo.com",
+    "email": "amazingsurge@gmail.com",
     "url": "amazingSurge.com"
   },
   "repository": {
@@ -14,27 +14,93 @@
     "url": "git@github.com:amazingSurge/jquery-asScrollable.git"
   },
   "bugs": "https://github.com/amazingSurge/jquery-asScrollable/issues",
-  "licenses": [
-    {
-      "type": "GPL",
-      "url": "https://github.com/amazingSurge/jquery-asScrollable/blob/master/LICENSE-GPL"
-    }
+  "licenses": [{
+    "type": "LGPL-3.0",
+    "url": "https://github.com/amazingSurge/jquery-asScrollable/blob/master/LICENSE"
+  }],
+  "license": "LGPL-3.0",
+  "files": [
+    "dist",
+    "src"
   ],
-  "engines": {
-    "node": ">=0.10.0"
+  "scripts": {
+    "prestart": "npm install",
+    "start": "gulp serve",
+    "build": "npm run prestart && gulp build",
+    "deploy": "gulp deploy",
+    "deploy:prepare": "gulp deploy:prepare",
+    "test": "gulp test"
   },
   "devDependencies": {
-    "grunt": "*",
-    "grunt-autoprefixer": "*",
-    "grunt-contrib-clean": "*",
-    "grunt-contrib-concat": "*",
-    "grunt-contrib-copy": "*",
-    "grunt-contrib-jshint": "*",
-    "grunt-contrib-less": "*",
-    "grunt-contrib-uglify": "*",
-    "grunt-contrib-watch": "*",
-    "grunt-jsbeautifier": "*",
-    "grunt-text-replace": "*",
-    "load-grunt-tasks": "*"
+    "argv": "*",
+    "babel-core": "*",
+    "babel-eslint": "*",
+    "babel-istanbul": "*",
+    "babel-plugin-transform-es2015-modules-umd": "^6.12.0",
+    "babel-preset-es2015": "*",
+    "babel-preset-es2015-rollup": "*",
+    "babelrc-rollup": "*",
+    "browser-sync": "*",
+    "chai": "*",
+    "del": "*",
+    "esformatter": "*",
+    "graceful-fs": "*",
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-autoprefixer": "*",
+    "gulp-babel": "*",
+    "gulp-changed": "*",
+    "gulp-csscomb": "*",
+    "gulp-csslint": "*",
+    "gulp-cssnano": "*",
+    "gulp-eslint": "*",
+    "gulp-extname": "*",
+    "gulp-filter": "*",
+    "gulp-header": "*",
+    "gulp-iconfont-css": "*",
+    "gulp-if": "*",
+    "gulp-jshint": "*",
+    "gulp-notify": "*",
+    "gulp-plumber": "*",
+    "gulp-rename": "*",
+    "gulp-replace": "*",
+    "gulp-sass": "*",
+    "gulp-sass-unicode": "*",
+    "gulp-scss-lint": "*",
+    "gulp-rollup": "*",
+    "gulp-size": "*",
+    "gulp-sourcemaps": "*",
+    "gulp-stylelint": "*",
+    "gulp-uglify": "*",
+    "gulp-util": "*",
+    "gulp-zip": "*",
+    "inquirer": "*",
+    "jshint": "*",
+    "karma": "*",
+    "karma-babel-preprocessor": "*",
+    "karma-chrome-launcher": "*",
+    "karma-commonjs": "*",
+    "karma-coverage": "*",
+    "karma-firefox-launcher": "*",
+    "karma-mocha": "*",
+    "karma-mocha-reporter": "*",
+    "karma-phantomjs-launcher": "*",
+    "karma-rollup-plugin": "*",
+    "karma-sinon-chai": "*",
+    "merge-stream": "*",
+    "mkdirp": "*",
+    "mocha": "*",
+    "node-notifier": "*",
+    "path-exists": "*",
+    "phantomjs-prebuilt": "*",
+    "rollup-plugin-babel": "*",
+    "rollup-plugin-istanbul": "*",
+    "sinon": "*",
+    "sinon-chai": "*",
+    "stylelint-scss": "*",
+    "through2": "*"
+  },
+  "engines": {
+    "node": ">= 6.2.2",
+    "npm": ">= 3"
   }
 }
