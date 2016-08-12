@@ -43,7 +43,7 @@ jQuery(function($) {
     throttle: 20,
 
     scrollbar: {}
-  }); 
+  });
 });
 </script>
 ```
