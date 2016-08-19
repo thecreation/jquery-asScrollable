@@ -26,7 +26,7 @@
   "dependencies": {
     "jquery": ">=2.1.1",
     "jquery-wheel": "git@github.com:brandonaaron/jquery-mousewheel.git",
-    "jquery-asScrollbar": "git@github.com:amazingSurge/jquery-asScrollable.git",
+    "jquery-asScrollbar": "git@github.com:amazingSurge/jquery-asScrollbar.git",
     "holderjs": "~2.4.1"
   }
 }
