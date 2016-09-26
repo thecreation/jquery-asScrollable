@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollable v0.4.0
+* jQuery asScrollable v0.4.1
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
@@ -51,9 +51,9 @@
   overflow: hidden;
   line-height: 0;
   -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
   border-radius: 2px;
   -webkit-transition: opacity .5s;
   transition: opacity .5s;
@@ -139,9 +139,9 @@
 
 .asScrollable.is-dragging {
   -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
 
   -webkit-touch-callout: none;
   user-input: disabled;

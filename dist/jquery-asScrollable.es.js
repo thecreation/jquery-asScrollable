@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollable v0.4.0
+* jQuery asScrollable v0.4.1
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
@@ -39,7 +39,7 @@ var DEFAULTS = {
 /**
  * Helper functions
  **/
-let getTime = () => {
+const getTime = () => {
   'use strict';
 
   if (typeof window.performance !== 'undefined' && window.performance.now) {
@@ -48,13 +48,13 @@ let getTime = () => {
     return Date.now();
 };
 
-let isPercentage = (n) => {
+const isPercentage = (n) => {
   'use strict';
 
   return typeof n === 'string' && n.indexOf('%') !== -1;
 };
 
-let conventToPercentage = (n) => {
+const conventToPercentage = (n) => {
   'use strict';
 
   if (n < 0) {
@@ -65,7 +65,7 @@ let conventToPercentage = (n) => {
   return `${parseFloat(n).toFixed(4) * 100}%`;
 };
 
-let convertPercentageToFloat = (n) => {
+const convertPercentageToFloat = (n) => {
   'use strict';
 
   return parseFloat(n.slice(0, -1) / 100, 10);
@@ -92,7 +92,7 @@ const NAME$1 = 'asScrollable';
 let instanceId = 0;
 
 class asScrollable {
-  constructor(options, element) {
+  constructor(element, options) {
     this.$element = $(element);
     options = this.options = $.extend({}, DEFAULTS, options || {}, this.$element.data('options') || {});
 
@@ -428,7 +428,7 @@ class asScrollable {
   }
 
   trigger(eventType, ...params) {
-    let data = [this].concat(params);
+    const data = [this].concat(params);
 
     // event
     this.$element.trigger(`${NAME$1}::${eventType}`, data);
@@ -437,7 +437,7 @@ class asScrollable {
     eventType = eventType.replace(/\b\w+\b/g, (word) => {
       return word.substring(0, 1).toUpperCase() + word.substring(1);
     });
-    let onFunction = `on${eventType}`;
+    const onFunction = `on${eventType}`;
 
     if (typeof this.options[onFunction] === 'function') {
       this.options[onFunction].apply(this, params);
@@ -500,7 +500,7 @@ class asScrollable {
    * @description Borrowed from Underscore.js
    */
   throttle(func, wait) {
-    let _now = Date.now || function() {
+    const _now = Date.now || function() {
       return new Date().getTime();
     };
 
@@ -509,7 +509,7 @@ class asScrollable {
     let args;
     let result;
     let previous = 0;
-    var later = function() {
+    let later = function() {
       previous = _now();
       timeout = null;
       result = func.apply(context, args);
@@ -845,7 +845,7 @@ class asScrollable {
 }
 
 var info = {
-  version:'0.4.0'
+  version:'0.4.1'
 };
 
 const NAME = 'asScrollable';
@@ -874,7 +874,7 @@ $.fn.asScrollable = function jQueryAsScrollable(options, ...args) {
 
   return this.each(function() {
     if (!$(this).data(NAME)) {
-      $(this).data(NAME, new asScrollable(options, this));
+      $(this).data(NAME, new asScrollable(this, options));
     }
   });
 };

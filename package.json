@@ -2,7 +2,7 @@
   "name": "jquery-asScrollable",
   "title": "jQuery asScrollable",
   "description": "A jquery plugin that make a block element scrollable.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "homepage": "https://github.com/amazingSurge/jquery-asScrollable",
   "author": {
     "name": "amazingSurge",
@@ -123,6 +123,6 @@
   },
   "dependencies": {
     "jquery": ">=2.2.0",
-    "jquery-asScrollbar": ">=0.5.1"
+    "jquery-asScrollbar": ">=0.5.2"
   }
 }

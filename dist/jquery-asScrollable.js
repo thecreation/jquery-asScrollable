@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollable v0.4.0
+* jQuery asScrollable v0.4.1
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
@@ -165,7 +165,7 @@
     var instanceId = 0;
 
     var asScrollable = function() {
-      function asScrollable(options, element) {
+      function asScrollable(element, options) {
         _classCallCheck(this, asScrollable);
 
         this.$element = (0, _jquery2.default)(element);
@@ -1042,7 +1042,7 @@
     }();
 
     var info = {
-      version: '0.4.0'
+      version: '0.4.1'
     };
 
     var NAME = 'asScrollable';
@@ -1099,7 +1099,7 @@
 
         function() {
           if (!(0, _jquery2.default)(this).data(NAME)) {
-            (0, _jquery2.default)(this).data(NAME, new asScrollable(options, this));
+            (0, _jquery2.default)(this).data(NAME, new asScrollable(this, options));
           }
         }
       );

@@ -13,7 +13,7 @@ const NAME = 'asScrollable';
 let instanceId = 0;
 
 class asScrollable {
-  constructor(options, element) {
+  constructor(element, options) {
     this.$element = $(element);
     options = this.options = $.extend({}, DEFAULTS, options || {}, this.$element.data('options') || {});
 
@@ -349,7 +349,7 @@ class asScrollable {
   }
 
   trigger(eventType, ...params) {
-    let data = [this].concat(params);
+    const data = [this].concat(params);
 
     // event
     this.$element.trigger(`${NAME}::${eventType}`, data);
@@ -358,7 +358,7 @@ class asScrollable {
     eventType = eventType.replace(/\b\w+\b/g, (word) => {
       return word.substring(0, 1).toUpperCase() + word.substring(1);
     });
-    let onFunction = `on${eventType}`;
+    const onFunction = `on${eventType}`;
 
     if (typeof this.options[onFunction] === 'function') {
       this.options[onFunction].apply(this, params);
@@ -421,7 +421,7 @@ class asScrollable {
    * @description Borrowed from Underscore.js
    */
   throttle(func, wait) {
-    let _now = Date.now || function() {
+    const _now = Date.now || function() {
       return new Date().getTime();
     };
 
@@ -430,7 +430,7 @@ class asScrollable {
     let args;
     let result;
     let previous = 0;
-    var later = function() {
+    let later = function() {
       previous = _now();
       timeout = null;
       result = func.apply(context, args);

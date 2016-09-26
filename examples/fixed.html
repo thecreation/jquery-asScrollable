@@ -1,16 +1,14 @@
 <!doctype html>
-<html class="no-js" lang="">
+<html class="no-js">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>jQuery asScrollable</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="../dist/css/asScrollable.css">
-
   <style type="text/css">
     body {
       background-color: #f7f7f7;
@@ -43,12 +41,10 @@
     }
   </style>
 </head>
-
 <body>
   <!--[if lt IE 8]>
-        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-    <![endif]-->
-
+    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+  <![endif]-->
   <div class="sidebar" data-options='{"direction": "vertical", "contentSelector": ">", "containerSelector": ">"}'>
     <div>
       <div>
@@ -88,30 +84,23 @@
   <script type="text/javascript">
     jQuery(function($) {
       Holder.run();
-
       $('.sidebar').asScrollable();
-
       $('.sidebar').on('asScrollable::scrolltop', function(e, api, direction) {
         console.info('top:' + direction);
       });
-
       $('.sidebar').on('asScrollable::scrollend', function(e, api, direction) {
         console.info('end:' + direction);
       });
-
       $('.api-scroll-to').on('click', function() {
         var to = $(this).data('to');
-
         $('.sidebar').asScrollable('scrollTo', 'vertical', to);
         $('.sidebar').asScrollable('scrollTo', 'horizontal', to);
       });
-
       $('.api-scroll-by').on('click', function() {
         var to = $(this).data('by');
         $('.sidebar').asScrollable('scrollBy', 'horizontal', to);
         $('.sidebar').asScrollable('scrollBy', 'vertical', to);
       });
-
       $('.api-init').on('click', function() {
         $('.sidebar').asScrollable();
       });

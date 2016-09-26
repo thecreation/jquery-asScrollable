@@ -1,7 +1,7 @@
 /**
  * Helper functions
  **/
-let getTime = () => {
+const getTime = () => {
   'use strict';
 
   if (typeof window.performance !== 'undefined' && window.performance.now) {
@@ -10,13 +10,13 @@ let getTime = () => {
     return Date.now();
 };
 
-let isPercentage = (n) => {
+const isPercentage = (n) => {
   'use strict';
 
   return typeof n === 'string' && n.indexOf('%') !== -1;
 };
 
-let conventToPercentage = (n) => {
+const conventToPercentage = (n) => {
   'use strict';
 
   if (n < 0) {
@@ -27,7 +27,7 @@ let conventToPercentage = (n) => {
   return `${parseFloat(n).toFixed(4) * 100}%`;
 };
 
-let convertPercentageToFloat = (n) => {
+const convertPercentageToFloat = (n) => {
   'use strict';
 
   return parseFloat(n.slice(0, -1) / 100, 10);

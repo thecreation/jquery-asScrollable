@@ -1,16 +1,14 @@
 <!doctype html>
-<html class="no-js" lang="">
+<html class="no-js">
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>jQuery asScrollable</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <link rel="stylesheet" href="css/normalize.css">
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="../dist/css/asScrollable.css">
-
   <style type="text/css">
     body {
       background-color: #f7f7f7;
@@ -34,20 +32,20 @@
       background-color: #fefefe;
     }
 
-    .box, .simple {
+    .box,
+    .simple {
       height: 200px;
     }
   </style>
 </head>
 <body>
   <!--[if lt IE 8]>
-        <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-    <![endif]-->
+    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+  <![endif]-->
   <div class="section">
     <div class="inner">
       <section>
         <h3>Vertical Scrollable</h3>
-
         <div class="example box" data-options='{"direction": "vertical", "contentSelector": ">", "containerSelector": ">"}'>
           <div>
             <div>
@@ -61,7 +59,6 @@
           </div>
         </div>
       </section>
-
       <section>
         <h3>Horizontal Scrollable</h3>
         <div class="example box" data-options='{"direction": "horizontal", "contentSelector": ">", "containerSelector": ">"}'>
@@ -72,7 +69,6 @@
           </div>
         </div>
       </section>
-
       <section>
         <h3>Both Scrollable</h3>
         <div class="example box" data-options='{"direction": "both", "contentSelector": ">", "containerSelector": ">"}'>
@@ -83,7 +79,6 @@
           </div>
         </div>
       </section>
-
       <section>
         <h3>Both Scrollable With No scroll</h3>
         <div class="example box" data-options='{"direction": "both", "contentSelector": ">", "containerSelector": ">"}'>
@@ -94,7 +89,6 @@
           </div>
         </div>
       </section>
-
       <section>
         <h3>Auto x</h3>
         <div class="example box" style="overflow-x: auto; overflow-y: hidden" data-options='{"direction": "auto", "contentSelector": ">", "containerSelector": ">"}'>
@@ -105,7 +99,6 @@
           </div>
         </div>
       </section>
-
       <section>
         <h3>Auto y</h3>
         <div class="example box" style="overflow-y: auto; overflow-x: hidden" data-options='{"direction": "auto", "contentSelector": ">", "containerSelector": ">"}'>
@@ -116,7 +109,6 @@
           </div>
         </div>
       </section>
-
       <section>
         <h3>Auto both</h3>
         <div class="example box" style="overflow: auto" data-options='{"direction": "auto", "contentSelector": ">", "containerSelector": ">"}'>
@@ -127,7 +119,6 @@
           </div>
         </div>
       </section>
-
       <section>
         <h3>Auto none</h3>
         <div class="example box" data-options='{"direction": "auto", "contentSelector": ">", "containerSelector": ">"}'>
@@ -138,19 +129,18 @@
           </div>
         </div>
       </section>
-
       <section>
         <h3>Simple Structure</h3>
         <div class="simple example">
           <div>
-          	<div>
-	            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam malesuada at metus eget sodales. Aenean tincidunt mi sed orci sollicitudin placerat. Nullam tempus nisl augue, sed pulvinar eros lacinia vitae. Mauris vehicula velit a nibh dapibus vehicula. Fusce dui tellus, tincidunt sit amet porttitor efficitur, aliquam ac arcu. Cras non tempor dui. Nunc a dolor sit amet dolor bibendum auctor a eu ipsum.</p>
-	            <p>Pellentesque lobortis facilisis risus, sit amet maximus turpis venenatis vitae. Donec nec eros iaculis, congue risus at, tempus augue. Donec quis felis vel purus pretium tincidunt. Integer sodales ultricies tristique. Phasellus et risus sagittis, dictum tortor a, semper lorem. Vivamus quis ipsum velit. Nam molestie ut ipsum ultricies volutpat. Integer molestie sagittis tempor. Integer vitae mauris est. Ut laoreet dignissim tellus, non accumsan erat gravida vel. Curabitur non erat id velit aliquam malesuada. Proin aliquet cursus orci quis pulvinar.</p>
-	            <p>Duis elit massa, scelerisque sed nisl sed, tempus iaculis felis. Duis accumsan eget justo id auctor. Aliquam consequat odio non dolor efficitur, hendrerit porttitor neque porttitor. Integer varius maximus nunc, at malesuada leo tristique id. Sed aliquet pharetra ipsum, non interdum lacus dictum sit amet. Curabitur semper imperdiet sem eget interdum. Nunc at egestas tellus, vel tincidunt lacus. Fusce eget neque vel leo volutpat tincidunt ac non enim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus cursus leo in felis viverra interdum.</p>
-	            <p>Mauris id ultricies magna. Quisque rutrum lobortis elit blandit rutrum. Curabitur mattis enim lorem, eget tempor nunc pretium dignissim. Cras tincidunt ac nisl eget finibus. Fusce lobortis turpis sed dui mollis, eget fringilla risus porttitor. In id neque vitae lorem pharetra sodales. Morbi neque ex, mattis at dolor quis, consequat tincidunt leo. Vivamus sagittis placerat sem at porta.</p>
-	            <p>Proin varius arcu ac ligula suscipit, sit amet pretium lectus tincidunt. Aliquam eu mi imperdiet, efficitur tellus ac, mollis eros. Cras malesuada feugiat pharetra. Curabitur lectus lacus, bibendum sed odio at, egestas tempor nisl. Vivamus sagittis est porta velit pretium, in elementum arcu tempus. Ut id cursus libero, non ullamcorper velit. Cras pretium arcu lacus, nec dignissim elit accumsan vitae. Aliquam tristique lorem et tempus congue. Donec vel metus enim. Praesent sed turpis et magna suscipit tincidunt. Proin efficitur neque non sapien cursus vehicula. Suspendisse iaculis, neque vel convallis lobortis, mauris dui posuere mi, at maximus lorem tortor a metus. Ut in quam efficitur, finibus nulla et, feugiat orci.</p>
-	            <p>Sed mattis volutpat enim eget porttitor. Sed lectus ligula, condimentum nec elit eget, vehicula porttitor nunc. Curabitur pulvinar leo velit, a convallis tellus suscipit ac. Donec tempor est ut sagittis varius. Mauris maximus nunc metus, non venenatis justo ornare vel. Phasellus iaculis erat sit amet enim fermentum mattis. Cras sollicitudin tortor dolor, ac aliquam dolor iaculis non. Donec sed sodales enim. Suspendisse potenti. Integer quis turpis cursus enim consectetur fringilla eu eu ante.</p>
-	           </div>
+            <div>
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam malesuada at metus eget sodales. Aenean tincidunt mi sed orci sollicitudin placerat. Nullam tempus nisl augue, sed pulvinar eros lacinia vitae. Mauris vehicula velit a nibh dapibus vehicula. Fusce dui tellus, tincidunt sit amet porttitor efficitur, aliquam ac arcu. Cras non tempor dui. Nunc a dolor sit amet dolor bibendum auctor a eu ipsum.</p>
+              <p>Pellentesque lobortis facilisis risus, sit amet maximus turpis venenatis vitae. Donec nec eros iaculis, congue risus at, tempus augue. Donec quis felis vel purus pretium tincidunt. Integer sodales ultricies tristique. Phasellus et risus sagittis, dictum tortor a, semper lorem. Vivamus quis ipsum velit. Nam molestie ut ipsum ultricies volutpat. Integer molestie sagittis tempor. Integer vitae mauris est. Ut laoreet dignissim tellus, non accumsan erat gravida vel. Curabitur non erat id velit aliquam malesuada. Proin aliquet cursus orci quis pulvinar.</p>
+              <p>Duis elit massa, scelerisque sed nisl sed, tempus iaculis felis. Duis accumsan eget justo id auctor. Aliquam consequat odio non dolor efficitur, hendrerit porttitor neque porttitor. Integer varius maximus nunc, at malesuada leo tristique id. Sed aliquet pharetra ipsum, non interdum lacus dictum sit amet. Curabitur semper imperdiet sem eget interdum. Nunc at egestas tellus, vel tincidunt lacus. Fusce eget neque vel leo volutpat tincidunt ac non enim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vivamus cursus leo in felis viverra interdum.</p>
+              <p>Mauris id ultricies magna. Quisque rutrum lobortis elit blandit rutrum. Curabitur mattis enim lorem, eget tempor nunc pretium dignissim. Cras tincidunt ac nisl eget finibus. Fusce lobortis turpis sed dui mollis, eget fringilla risus porttitor. In id neque vitae lorem pharetra sodales. Morbi neque ex, mattis at dolor quis, consequat tincidunt leo. Vivamus sagittis placerat sem at porta.</p>
+              <p>Proin varius arcu ac ligula suscipit, sit amet pretium lectus tincidunt. Aliquam eu mi imperdiet, efficitur tellus ac, mollis eros. Cras malesuada feugiat pharetra. Curabitur lectus lacus, bibendum sed odio at, egestas tempor nisl. Vivamus sagittis est porta velit pretium, in elementum arcu tempus. Ut id cursus libero, non ullamcorper velit. Cras pretium arcu lacus, nec dignissim elit accumsan vitae. Aliquam tristique lorem et tempus congue. Donec vel metus enim. Praesent sed turpis et magna suscipit tincidunt. Proin efficitur neque non sapien cursus vehicula. Suspendisse iaculis, neque vel convallis lobortis, mauris dui posuere mi, at maximus lorem tortor a metus. Ut in quam efficitur, finibus nulla et, feugiat orci.</p>
+              <p>Sed mattis volutpat enim eget porttitor. Sed lectus ligula, condimentum nec elit eget, vehicula porttitor nunc. Curabitur pulvinar leo velit, a convallis tellus suscipit ac. Donec tempor est ut sagittis varius. Mauris maximus nunc metus, non venenatis justo ornare vel. Phasellus iaculis erat sit amet enim fermentum mattis. Cras sollicitudin tortor dolor, ac aliquam dolor iaculis non. Donec sed sodales enim. Suspendisse potenti. Integer quis turpis cursus enim consectetur fringilla eu eu ante.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -185,50 +175,39 @@
   <script src="../dist/jquery-asScrollable.js"></script>
   <script type="text/javascript">
     jQuery(function($) {
-
       Holder.run();
-
       $('.box').asScrollable();
       $('.simple').asScrollable({
-      	contentSelector: ">",
-      	containerSelector: ">"
+        contentSelector: ">",
+        containerSelector: ">"
       });
-
       $('.box').on('asScrollable::scrolltop', function(e, api, direction) {
         console.info('top:' + direction);
       });
-
       $('.box').on('asScrollable::scrollend', function(e, api, direction) {
         console.info('end:' + direction);
       });
-
       $('.api-scroll-to').on('click', function() {
         var to = $(this).data('to');
-
-        $('.box').asScrollable('scrollTo', 'vertical', to);
-        $('.box').asScrollable('scrollTo', 'horizontal', to);
+        $('.simple').asScrollable('scrollTo', 'vertical', to);
+        $('.simple').asScrollable('scrollTo', 'horizontal', to);
       });
-
       $('.api-scroll-by').on('click', function() {
         var to = $(this).data('by');
-        $('.box').asScrollable('scrollBy', 'horizontal', to);
-        $('.box').asScrollable('scrollBy', 'vertical', to);
+        $('.simple').asScrollable('scrollBy', 'horizontal', to);
+        $('.simple').asScrollable('scrollBy', 'vertical', to);
       });
-
       $('.api-init').on('click', function() {
-        $('.box').asScrollable();
+        $('.simple').asScrollable();
       });
-
       $('.api-enable').on('click', function() {
-        $('.box').asScrollable('enable');
+        $('.simple').asScrollable('enable');
       });
-
       $('.api-disable').on('click', function() {
-        $('.box').asScrollable('disable');
+        $('.simple').asScrollable('disable');
       });
-
       $('.api-destory').on('click', function() {
-        $('.box').asScrollable('destory');
+        $('.simple').asScrollable('destory');
       });
     });
   </script>

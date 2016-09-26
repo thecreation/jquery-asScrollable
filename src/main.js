@@ -28,7 +28,7 @@ $.fn.asScrollable = function jQueryAsScrollable(options, ...args) {
 
   return this.each(function() {
     if (!$(this).data(NAME)) {
-      $(this).data(NAME, new asScrollable(options, this));
+      $(this).data(NAME, new asScrollable(this, options));
     }
   });
 };

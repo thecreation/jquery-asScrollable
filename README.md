@@ -23,7 +23,10 @@
 dist/
 ├── jquery-asScrollable.js
 ├── jquery-asScrollable.es.js
-└── jquery-asScrollable.min.js
+├── jquery-asScrollable.min.js
+└── css/
+    ├── asScrollable.css
+    └── asScrollable.min.css
 ```
 
 ## Quick start
@@ -63,6 +66,7 @@ Done!
 #### Including files:
 
 ```html
+<link rel="stylesheet" href="/path/to/asScrollbar.css">
 <script src="/path/to/jquery.js"></script>
 <script src="/path/to/jquery-asScrollbar.js"></script>
 <script src="/path/to/jquery-asScrollable.js"></script>

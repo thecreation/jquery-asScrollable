@@ -1,8 +1,8 @@
 'use strict';
-import {exec} from 'child_process';
-import releaseIt from 'release-it';
+import {exec}        from 'child_process';
+import releaseIt     from 'release-it';
 import argv          from 'argv';
-import handleErrors from '../util/handleErrors';
+import handleErrors  from '../util/handleErrors';
 
 argv.option([
   {
