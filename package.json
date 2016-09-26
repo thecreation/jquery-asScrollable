@@ -1,24 +1,36 @@
 {
   "name": "jquery-asScrollable",
   "title": "jQuery asScrollable",
-  "description": "a jquery plugin",
-  "version": "0.3.1",
+  "description": "A jquery plugin that make a block element scrollable.",
+  "version": "0.4.0",
   "homepage": "https://github.com/amazingSurge/jquery-asScrollable",
   "author": {
     "name": "amazingSurge",
-    "email": "amazingsurge@gmail.com",
+    "email": "amazingSurge@gmail.com",
     "url": "amazingSurge.com"
   },
   "repository": {
     "type": "git",
     "url": "git@github.com:amazingSurge/jquery-asScrollable.git"
   },
+  "keywords": [
+    "jquery",
+    "jquery-plugin",
+    "ecosystem:jquery",
+    "ui",
+    "es6",
+    "scrollable",
+    "scrollbar"
+  ],
   "bugs": "https://github.com/amazingSurge/jquery-asScrollable/issues",
-  "licenses": [{
-    "type": "LGPL-3.0",
-    "url": "https://github.com/amazingSurge/jquery-asScrollable/blob/master/LICENSE"
-  }],
+  "licenses": [
+    {
+      "type": "LGPL-3.0",
+      "url": "https://github.com/amazingSurge/jquery-asScrollable/blob/master/LICENSE"
+    }
+  ],
   "license": "LGPL-3.0",
+  "main": "dist/jquery-asScrollable.js",
   "files": [
     "dist",
     "src"
@@ -29,14 +41,16 @@
     "build": "npm run prestart && gulp build",
     "deploy": "gulp deploy",
     "deploy:prepare": "gulp deploy:prepare",
+    "release": "gulp release",
     "test": "gulp test"
   },
   "devDependencies": {
     "argv": "*",
+    "assets-manager": "*",
     "babel-core": "*",
     "babel-eslint": "*",
     "babel-istanbul": "*",
-    "babel-plugin-transform-es2015-modules-umd": "^6.12.0",
+    "babel-plugin-transform-es2015-modules-umd": "*",
     "babel-preset-es2015": "*",
     "babel-preset-es2015-rollup": "*",
     "babelrc-rollup": "*",
@@ -63,16 +77,17 @@
     "gulp-plumber": "*",
     "gulp-rename": "*",
     "gulp-replace": "*",
+    "gulp-rollup": "*",
     "gulp-sass": "*",
     "gulp-sass-unicode": "*",
     "gulp-scss-lint": "*",
-    "gulp-rollup": "*",
     "gulp-size": "*",
     "gulp-sourcemaps": "*",
     "gulp-stylelint": "*",
     "gulp-uglify": "*",
     "gulp-util": "*",
     "gulp-zip": "*",
+    "holderjs": "^2.9.4",
     "inquirer": "*",
     "jshint": "*",
     "karma": "*",
@@ -90,17 +105,24 @@
     "mkdirp": "*",
     "mocha": "*",
     "node-notifier": "*",
+    "normalize.css": "^4.2.0",
     "path-exists": "*",
     "phantomjs-prebuilt": "*",
+    "release-it": "*",
     "rollup-plugin-babel": "*",
     "rollup-plugin-istanbul": "*",
     "sinon": "*",
     "sinon-chai": "*",
+    "stylelint-config-bootstrap": "*",
     "stylelint-scss": "*",
     "through2": "*"
   },
   "engines": {
     "node": ">= 6.2.2",
     "npm": ">= 3"
+  },
+  "dependencies": {
+    "jquery": ">=2.2.0",
+    "jquery-asScrollbar": ">=0.5.1"
   }
 }

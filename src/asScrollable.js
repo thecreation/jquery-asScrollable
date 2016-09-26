@@ -1,6 +1,5 @@
-import $ from 'jQuery';
-import asScrollbar from '../libs/jquery-asScrollbar.es.js';
-import defaults from './defaults';
+import $ from 'jquery';
+import DEFAULTS from './defaults';
 import {
   getTime,
   isPercentage,
@@ -16,7 +15,7 @@ let instanceId = 0;
 class asScrollable {
   constructor(options, element) {
     this.$element = $(element);
-    options = this.options = $.extend({}, defaults, options || {}, this.$element.data('options') || {});
+    options = this.options = $.extend({}, DEFAULTS, options || {}, this.$element.data('options') || {});
 
     this.classes = {
       wrap: options.namespace,
@@ -81,7 +80,7 @@ class asScrollable {
 
     this.instanceId = (++instanceId);
 
-    this.easing = asScrollbar.easing[this.options.easing] || asScrollbar.easing.ease;
+    this.easing = $.asScrollbar.getEasing(this.options.easing) || $.asScrollbar.getEasing('ease');
 
     let position = this.$element.css('position');
     if (this.options.containerSelector) {
@@ -115,39 +114,34 @@ class asScrollable {
 
   init() {
     switch (this.options.direction) {
-      case 'vertical':
-        {
-          this.vertical = true;
-          break;
-        }
-      case 'horizontal':
-        {
-          this.horizontal = true;
-          break;
-        }
-      case 'both':
-        {
-          this.horizontal = true;
-          this.vertical = true;
-          break;
-        }
-      case 'auto':
-        {
-          let overflowX = this.$element.css('overflow-x'),
-            overflowY = this.$element.css('overflow-y');
+      case 'vertical': {
+        this.vertical = true;
+        break;
+      }
+      case 'horizontal': {
+        this.horizontal = true;
+        break;
+      }
+      case 'both': {
+        this.horizontal = true;
+        this.vertical = true;
+        break;
+      }
+      case 'auto': {
+        let overflowX = this.$element.css('overflow-x'),
+          overflowY = this.$element.css('overflow-y');
 
-          if (overflowX === 'scroll' || overflowX === 'auto') {
-            this.horizontal = true;
-          }
-          if (overflowY === 'scroll' || overflowY === 'auto') {
-            this.vertical = true;
-          }
-          break;
+        if (overflowX === 'scroll' || overflowX === 'auto') {
+          this.horizontal = true;
         }
-      default:
-        {
-          break;
+        if (overflowY === 'scroll' || overflowY === 'auto') {
+          this.vertical = true;
         }
+        break;
+      }
+      default: {
+        break;
+      }
     }
 
     if (!this.vertical && !this.horizontal) {
@@ -177,10 +171,11 @@ class asScrollable {
     }
 
     this.bindEvents();
+
+    this.trigger('ready');
   }
 
   bindEvents() {
-    let self = this;
     if (this.options.responsive) {
       $(window).on(this.eventNameWithId('orientationchange'), () => {
         this.update();
@@ -194,95 +189,108 @@ class asScrollable {
       return;
     }
 
+    let that = this;
+
     this.$wrap.on(this.eventName('mouseenter'), () => {
-      this.$wrap.addClass(this.options.hoveringClass);
-      this.enter('hovering');
-      this.trigger('hover');
+      that.$wrap.addClass(this.options.hoveringClass);
+      that.enter('hovering');
+      that.trigger('hover');
     });
 
     this.$wrap.on(this.eventName('mouseleave'), () => {
-      this.$wrap.removeClass(this.options.hoveringClass);
+      that.$wrap.removeClass(this.options.hoveringClass);
 
-      if (!this.is('hovering')) {
+      if (!that.is('hovering')) {
         return;
       }
-      this.leave('hovering');
-      this.trigger('hovered');
+      that.leave('hovering');
+      that.trigger('hovered');
     });
-    //======>>>>>self<<<<<<<=======
+
     if (this.options.showOnHover) {
       if (this.options.showOnBarHover) {
-        this.$bar.on('asScrollbar::hover', function() {
-          self.showBar(this.direction);
-        }).on('asScrollbar::hovered', function() {
-          self.hideBar(this.direction);
+        this.$bar.on('asScrollbar::hover', () => {
+          if(that.horizontal){
+            that.showBar('horizontal');
+          }
+          if(that.vertical){
+            that.showBar('vertical');
+          }
+        }).on('asScrollbar::hovered', () => {
+          if(that.horizontal){
+            that.hideBar('horizontal');
+          }
+          if(that.vertical){
+            that.hideBar('vertical');
+          }
         });
       } else {
         this.$element.on(`${NAME}::hover`, $.proxy(this.showBar, this));
         this.$element.on(`${NAME}::hovered`, $.proxy(this.hideBar, this));
       }
     }
-    //======>>>>>end self<<<<<<<=======
 
     this.$container.on(this.eventName('scroll'), () => {
-      if (this.horizontal) {
-        let oldLeft = this.offsetLeft;
-        this.offsetLeft = this.getOffset('horizontal');
+      if (that.horizontal) {
+        let oldLeft = that.offsetLeft;
+        that.offsetLeft = that.getOffset('horizontal');
 
-        if (oldLeft !== this.offsetLeft) {
-          this.trigger('scroll', this.getPercentOffset('horizontal'), 'horizontal');
+        if (oldLeft !== that.offsetLeft) {
+          that.trigger('scroll', that.getPercentOffset('horizontal'), 'horizontal');
 
-          if (this.offsetLeft === 0) {
-            this.trigger('scrolltop', 'horizontal');
+          if (that.offsetLeft === 0) {
+            that.trigger('scrolltop', 'horizontal');
           }
-          if (this.offsetLeft === this.getScrollLength('horizontal')) {
-            this.trigger('scrollend', 'horizontal');
+          if (that.offsetLeft === that.getScrollLength('horizontal')) {
+            that.trigger('scrollend', 'horizontal');
           }
         }
       }
 
-      if (this.vertical) {
-        let oldTop = this.offsetTop;
+      if (that.vertical) {
+        let oldTop = that.offsetTop;
 
-        this.offsetTop = this.getOffset('vertical');
+        that.offsetTop = that.getOffset('vertical');
 
-        if (oldTop !== this.offsetTop) {
-          this.trigger('scroll', this.getPercentOffset('vertical'), 'vertical');
+        if (oldTop !== that.offsetTop) {
+          that.trigger('scroll', that.getPercentOffset('vertical'), 'vertical');
 
-          if (this.offsetTop === 0) {
-            this.trigger('scrolltop', 'vertical');
+          if (that.offsetTop === 0) {
+            that.trigger('scrolltop', 'vertical');
           }
-          if (this.offsetTop === this.getScrollLength('vertical')) {
-            this.trigger('scrollend', 'vertical');
+          if (that.offsetTop === that.getScrollLength('vertical')) {
+            that.trigger('scrollend', 'vertical');
           }
         }
       }
     });
 
     this.$element.on(`${NAME}::scroll`, (e, api, value, direction) => {
-      if (!this.is('scrolling')) {
-        this.enter('scrolling');
-        this.$wrap.addClass(this.options.scrollingClass);
+      if (!that.is('scrolling')) {
+        that.enter('scrolling');
+        that.$wrap.addClass(that.options.scrollingClass);
       }
       let bar = api.getBarApi(direction);
 
       bar.moveTo(conventToPercentage(value), false, true);
 
-      clearTimeout(this._timeoutId);
-      this._timeoutId = setTimeout(() => {
-        this.$wrap.removeClass(this.options.scrollingClass);
-        this.leave('scrolling');
+      clearTimeout(that._timeoutId);
+      that._timeoutId = setTimeout(() => {
+        that.$wrap.removeClass(that.options.scrollingClass);
+        that.leave('scrolling');
       }, 200);
     });
 
-    this.$bar.on('asScrollbar::change', function(e, api, value) {
-      self.scrollTo(this.direction, conventToPercentage(value), false, true);
+    this.$bar.on('asScrollbar::change', (e, api, value) => {
+      if(typeof e.target.direction === 'string') {
+        that.scrollTo(e.target.direction, conventToPercentage(value), false, true);
+      }
     });
 
     this.$bar.on('asScrollbar::drag', () => {
-      this.$wrap.addClass(this.options.draggingClass);
+      that.$wrap.addClass(that.options.draggingClass);
     }).on('asScrollbar::dragged', () => {
-      this.$wrap.removeClass(this.options.draggingClass);
+      that.$wrap.removeClass(that.options.draggingClass);
     });
   }
 
@@ -306,7 +314,7 @@ class asScrollable {
       scrollbarWidth = this.getBrowserScrollbarWidth(direction);
 
     this.$content.css(attributes.crossLength, `${parentLength}px`);
-    this.$container.css(attributes.crossLength, `${scrollbarWidth}${parentLength}px`);
+    this.$container.css(attributes.crossLength, scrollbarWidth + parentLength +'px');
 
     if (scrollbarWidth === 0 && isFFLionScrollbar) {
       this.$container.css(attributes.ffPadding, 16);
@@ -319,7 +327,6 @@ class asScrollable {
       direction: direction,
       useCssTransitions: false,
       keyboard: false
-        //mousewheel: false
     });
     let $bar = $('<div>');
     $bar.asScrollbar(options);
@@ -417,26 +424,37 @@ class asScrollable {
     let _now = Date.now || function() {
       return new Date().getTime();
     };
-    let args, context, result;
-    let timeout = null;
+
+    let timeout;
+    let context;
+    let args;
+    let result;
     let previous = 0;
-    let later = function() {
+    var later = function() {
       previous = _now();
       timeout = null;
       result = func.apply(context, args);
-      context = args = null;
+      if (!timeout) {
+        context = args = null;
+      }
     };
-    return function() {
+
+    return (...params) => {
+      /*eslint consistent-this: "off"*/
       let now = _now();
       let remaining = wait - (now - previous);
       context = this;
-      args = arguments;
-      if (remaining <= 0) {
-        clearTimeout(timeout);
-        timeout = null;
+      args = params;
+      if (remaining <= 0 || remaining > wait) {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
+        }
         previous = now;
         result = func.apply(context, args);
-        context = args = null;
+        if (!timeout) {
+          context = args = null;
+        }
       } else if (!timeout) {
         timeout = setTimeout(later, remaining);
       }
@@ -536,47 +554,49 @@ class asScrollable {
 
     let attributes = this.attributes[direction];
 
+    var that = this;
     let callback = () => {
-      this.leave('moving');
+      that.leave('moving');
     };
 
     if (sync) {
       this.$container[0][attributes.scroll] = value;
 
       if (trigger !== false) {
-        this.trigger('change', value / this.getScrollLength(direction));
+        this.trigger('change', value / this.getScrollLength(direction), direction);
       }
       callback();
     } else {
       this.enter('animating');
+
       let startTime = getTime();
       let start = this.getOffset(direction);
       let end = value;
 
       let run = (time) => {
-        let percent = (time - startTime) / this.options.duration;
+        let percent = (time - startTime) / that.options.duration;
 
         if (percent > 1) {
           percent = 1;
         }
 
-        percent = this.easing.fn(percent);
+        percent = that.easing.fn(percent);
 
         let current = parseFloat(start + percent * (end - start), 10);
-        this.$container[0][attributes.scroll] = current;
+        that.$container[0][attributes.scroll] = current;
 
         if (trigger !== false) {
-          this.trigger('change', value / this.getScrollLength(direction));
+          that.trigger('change', value / that.getScrollLength(direction), direction);
         }
 
         if (percent === 1) {
-          window.cancelAnimationFrame(this._frameId);
-          this._frameId = null;
+          window.cancelAnimationFrame(that._frameId);
+          that._frameId = null;
 
-          this.leave('animating');
+          that.leave('animating');
           callback();
         } else {
-          this._frameId = window.requestAnimationFrame(run);
+          that._frameId = window.requestAnimationFrame(run);
         }
       };
 
@@ -643,6 +663,7 @@ class asScrollable {
       }
       api.setHandleLength(api.getBarLength() * containerLength / (scrollLength + containerLength), true);
     } else {
+
       api.disable();
     }
   }
@@ -655,6 +676,8 @@ class asScrollable {
       this.unbindEvents();
       this.unStyle();
     }
+
+    this.trigger('disable');
   }
 
   enable() {
@@ -665,6 +688,8 @@ class asScrollable {
       this.bindEvents();
       this.update();
     }
+
+    this.trigger('enable');
   }
 
   update() {
@@ -732,50 +757,12 @@ class asScrollable {
     }
     this.$content.removeClass(this.classes.content);
     this.$element.data(NAME, null);
+    this.trigger('destory');
   }
 
-  static _jQueryInterface(options, ...params) {
-    'use strict';
-
-    if (typeof options === 'string') {
-      let method = options;
-
-      if (/^\_/.test(method)) {
-        return false;
-      } else if ((/^(get)/.test(method))) {
-        let api = this.first().data(NAME);
-        if (api && typeof api[method] === 'function') {
-          return api[method].apply(api, params);
-        }
-      } else {
-        return this.each(function() {
-          let api = $.data(this, NAME);
-          if (api && typeof api[method] === 'function') {
-            api[method].apply(api, params);
-          }
-        });
-      }
-    } else {
-      return this.each(function() {
-        if (!$(this).data(NAME)) {
-          $(this).data(NAME, new asScrollable(options, this));
-        } else {
-          $(this).data(NAME).update();
-        }
-      });
-    }
-    return this;
+  static setDefaults(options) {
+    $.extend(DEFAULTS, $.isPlainObject(options) && options);
   }
-
 }
-
-$.fn[NAME] = asScrollable._jQueryInterface;
-$.fn[NAME].constructor = asScrollable;
-$.fn[NAME].noConflict = () => {
-  'use strict';
-
-  $.fn[NAME] = JQUERY_NO_CONFLICT;
-  return asScrollable._jQueryInterface;
-};
 
 export default asScrollable;

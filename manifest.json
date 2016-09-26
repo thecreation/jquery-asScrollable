@@ -1,0 +1,9 @@
+{
+  "dest": "examples",
+  "packages": {
+    "npm:jquery": true,
+    "npm:jquery-asScrollbar": true,
+    "npm:normalize.css": true,
+    "npm:holderjs": true
+  }
+}

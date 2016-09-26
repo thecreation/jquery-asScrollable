@@ -19,8 +19,6 @@ export function css(src = config.styles.dest, files = ['**/*.css', '!**/*.min.cs
 
 export function scss(src = config.styles.src, files = '**/*.scss') {
   return function() {
-    console.log(src)
-    console.log(files)
     let srcFiles = getSrcFiles(src, files);
 
     return gulp.src(srcFiles)

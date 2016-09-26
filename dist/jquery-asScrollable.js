@@ -1,33 +1,28 @@
 /**
-* jQuery asScrollable
-* a jquery plugin
-* Compiled: Fri Aug 12 2016 17:20:54 GMT+0800 (CST)
-* @version v0.3.1
-* @link https://github.com/amazingSurge/jquery-asScrollable
-* @copyright LGPL-3.0
+* jQuery asScrollable v0.4.0
+* https://github.com/amazingSurge/jquery-asScrollable
+*
+* Copyright (c) amazingSurge
+* Released under the LGPL-3.0 license
 */
 (function(global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(['exports', 'jQuery'], factory);
+    define(['jquery'], factory);
   } else if (typeof exports !== "undefined") {
-    factory(exports, require('jQuery'));
+    factory(require('jquery'));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod.exports, global.jQuery);
-    global.jqueryAsScrollable = mod.exports;
+    factory(global.jQuery);
+    global.jqueryAsScrollableEs = mod.exports;
   }
 })(this,
 
-  function(exports, _jQuery) {
+  function(_jquery) {
     'use strict';
 
-    Object.defineProperty(exports, "__esModule", {
-      value: true
-    });
-
-    var _jQuery2 = _interopRequireDefault(_jQuery);
+    var _jquery2 = _interopRequireDefault(_jquery);
 
     function _interopRequireDefault(obj) {
       return obj && obj.__esModule ? obj : {
@@ -76,1170 +71,7 @@
       };
     }();
 
-    var defaults = {
-      namespace: 'asScrollbar',
-
-      skin: null,
-      handleSelector: null,
-      handleTemplate: '<div class="{{handle}}"></div>',
-
-      barClass: null,
-      handleClass: null,
-
-      disabledClass: 'is-disabled',
-      draggingClass: 'is-dragging',
-      hoveringClass: 'is-hovering',
-
-      direction: 'vertical',
-
-      barLength: null,
-      handleLength: null,
-
-      minHandleLength: 30,
-      maxHandleLength: null,
-
-      mouseDrag: true,
-      touchDrag: true,
-      pointerDrag: true,
-      clickMove: true,
-      clickMoveStep: 0.3, // 0 - 1
-      mousewheel: true,
-      mousewheelSpeed: 50,
-
-      keyboard: true,
-
-      useCssTransforms3d: true,
-      useCssTransforms: true,
-      useCssTransitions: true,
-
-      duration: '500',
-      easing: 'ease' // linear, ease-in, ease-out, ease-in-out
-    };
-
-    var easingBezier = function easingBezier(mX1, mY1, mX2, mY2) {
-      'use strict';
-
-      var a = function a(aA1, aA2) {
-        return 1.0 - 3.0 * aA2 + 3.0 * aA1;
-      };
-
-      var b = function b(aA1, aA2) {
-        return 3.0 * aA2 - 6.0 * aA1;
-      };
-
-      var c = function c(aA1) {
-        return 3.0 * aA1;
-      };
-
-      // Returns x(t) given t, x1, and x2, or y(t) given t, y1, and y2.
-      var calcBezier = function calcBezier(aT, aA1, aA2) {
-        return ((a(aA1, aA2) * aT + b(aA1, aA2)) * aT + c(aA1)) * aT;
-      };
-
-      // Returns dx/dt given t, x1, and x2, or dy/dt given t, y1, and y2.
-      var getSlope = function getSlope(aT, aA1, aA2) {
-        return 3.0 * a(aA1, aA2) * aT * aT + 2.0 * b(aA1, aA2) * aT + c(aA1);
-      };
-
-      var getTForX = function getTForX(aX) {
-        // Newton raphson iteration
-        var aGuessT = aX;
-
-        for (var i = 0; i < 4; ++i) {
-          var currentSlope = getSlope(aGuessT, mX1, mX2);
-
-          if (currentSlope === 0.0) {
-
-            return aGuessT;
-          }
-          var currentX = calcBezier(aGuessT, mX1, mX2) - aX;
-          aGuessT -= currentX / currentSlope;
-        }
-
-        return aGuessT;
-      };
-
-      if (mX1 === mY1 && mX2 === mY2) {
-
-        return {
-          css: 'linear',
-          fn: function fn(aX) {
-            return aX;
-          }
-        };
-      }
-
-      return {
-        css: 'cubic-bezier(' + mX1 + ',' + mY1 + ',' + mX2 + ',' + mY2 + ')',
-        fn: function fn(aX) {
-          return calcBezier(getTForX(aX), mY1, mY2);
-        }
-      };
-    };
-
-    /**
-     * Helper functions
-     **/
-    var isPercentage = function isPercentage(n) {
-      'use strict';
-
-      return typeof n === 'string' && n.indexOf('%') !== -1;
-    };
-
-    var convertPercentageToFloat = function convertPercentageToFloat(n) {
-      'use strict';
-
-      return parseFloat(n.slice(0, -1) / 100, 10);
-    };
-
-    var convertMatrixToArray = function convertMatrixToArray(value) {
-      'use strict';
-
-      if (value && value.substr(0, 6) === 'matrix') {
-
-        return value.replace(/^.*\((.*)\)$/g, '$1').replace(/px/g, '').split(/, +/);
-      }
-
-      return false;
-    };
-
-    var support = {};
-
-    (function(support) {
-      /**
-       * Borrowed from Owl carousel
-       **/
-      'use strict';
-
-      var events = {
-          transition: {
-            end: {
-              WebkitTransition: 'webkitTransitionEnd',
-              MozTransition: 'transitionend',
-              OTransition: 'oTransitionEnd',
-              transition: 'transitionend'
-            }
-          },
-          animation: {
-            end: {
-              WebkitAnimation: 'webkitAnimationEnd',
-              MozAnimation: 'animationend',
-              OAnimation: 'oAnimationEnd',
-              animation: 'animationend'
-            }
-          }
-        },
-        prefixes = ['webkit', 'Moz', 'O', 'ms'],
-        style = (0, _jQuery2.default)('<support>').get(0).style,
-        tests = {
-          csstransforms: function csstransforms() {
-            return Boolean(test('transform'));
-          },
-          csstransforms3d: function csstransforms3d() {
-            return Boolean(test('perspective'));
-          },
-          csstransitions: function csstransitions() {
-            return Boolean(test('transition'));
-          },
-          cssanimations: function cssanimations() {
-            return Boolean(test('animation'));
-          }
-        };
-
-      var test = function test(property, prefixed) {
-        var result = false,
-          upper = property.charAt(0).toUpperCase() + property.slice(1);
-
-        if (style[property] !== undefined) {
-          result = property;
-        }
-
-        if (!result) {
-          _jQuery2.default.each(prefixes,
-
-            function(i, prefix) {
-              if (style[prefix + upper] !== undefined) {
-                result = '-' + prefix.toLowerCase() + '-' + upper;
-
-                return false;
-              }
-
-              return true;
-            }
-          );
-        }
-
-        if (prefixed) {
-
-          return result;
-        }
-
-        if (result) {
-
-          return true;
-        }
-
-        return false;
-      };
-
-      var prefixed = function prefixed(property) {
-        return test(property, true);
-      };
-
-      if (tests.csstransitions()) {
-        /* jshint -W053 */
-        support.transition = new String(prefixed('transition'));
-        support.transition.end = events.transition.end[support.transition];
-      }
-
-      if (tests.cssanimations()) {
-        /* jshint -W053 */
-        support.animation = new String(prefixed('animation'));
-        support.animation.end = events.animation.end[support.animation];
-      }
-
-      if (tests.csstransforms()) {
-        /* jshint -W053 */
-        support.transform = new String(prefixed('transform'));
-        support.transform3d = tests.csstransforms3d();
-      }
-
-      if ('ontouchstart' in window || window.DocumentTouch && document instanceof window.DocumentTouch) {
-        support.touch = true;
-      } else {
-        support.touch = false;
-      }
-
-      if (window.PointerEvent || window.MSPointerEvent) {
-        support.pointer = true;
-      } else {
-        support.pointer = false;
-      }
-
-      support.prefixPointerEvent = function(pointerEvent) {
-        var charStart = 9,
-          subStart = 10;
-
-        return window.MSPointerEvent ? 'MSPointer' + pointerEvent.charAt(charStart).toUpperCase() + pointerEvent.substr(subStart) : pointerEvent;
-      }
-      ;
-    })(support);
-
-    var NAME$1 = 'asScrollbar';
-
-    /**
-     * Animation Frame
-     **/
-
-    if (!Date.now) {
-      Date.now = function() {
-        'use strict';
-
-        return new Date().getTime();
-      }
-      ;
-    }
-
-    var getTime = function getTime() {
-      'use strict';
-
-      if (typeof window.performance !== 'undefined' && window.performance.now) {
-
-        return window.performance.now();
-      }
-
-      return Date.now();
-    };
-
-    var vendors = ['webkit', 'moz'];
-
-    for (var i = 0; i < vendors.length && !window.requestAnimationFrame; ++i) {
-      var vp = vendors[i];
-      window.requestAnimationFrame = window[vp + 'RequestAnimationFrame'];
-      window.cancelAnimationFrame = window[vp + 'CancelAnimationFrame'] || window[vp + 'CancelRequestAnimationFrame'];
-    }
-
-    if (/iP(ad|hone|od).*OS (6|7|8)/.test(window.navigator.userAgent) || !window.requestAnimationFrame || !window.cancelAnimationFrame) {
-      (function() {
-        var lastTime = 0;
-        window.requestAnimationFrame = function(callback) {
-          'use strict';
-
-          var now = getTime();
-          var timePlus = 16;
-          var nextTime = Math.max(lastTime + timePlus, now);
-
-          return setTimeout(
-
-            function() {
-              callback(lastTime = nextTime);
-            }
-            , nextTime - now);
-        }
-        ;
-        window.cancelAnimationFrame = clearTimeout;
-      })();
-    }
-
-    /**
-     * Plugin constructor
-     **/
-
-    var asScrollbar = function() {
-      function asScrollbar(options, bar) {
-        _classCallCheck(this, asScrollbar);
-
-        this.$bar = (0, _jQuery2.default)(bar);
-        options = this.options = _jQuery2.default.extend({}, defaults, options || {}, this.$bar.data('options') || {});
-        bar.direction = this.options.direction;
-
-        this.classes = {
-          directionClass: options.namespace + '-' + options.direction,
-          barClass: options.barClass ? options.barClass : options.namespace,
-          handleClass: options.handleClass ? options.handleClass : options.namespace + '-handle'
-        };
-
-        if (this.options.direction === 'vertical') {
-          this.attributes = {
-            axis: 'Y',
-            position: 'top',
-            length: 'height',
-            clientLength: 'clientHeight'
-          };
-        } else if (this.options.direction === 'horizontal') {
-          this.attributes = {
-            axis: 'X',
-            position: 'left',
-            length: 'width',
-            clientLength: 'clientWidth'
-          };
-        }
-
-        // Current state information.
-        this._states = {};
-
-        // Current state information for the drag operation.
-        this._drag = {
-          time: null,
-          pointer: null
-        };
-
-        // Current timeout
-        this._frameId = null;
-
-        // Current handle position
-        this.handlePosition = 0;
-
-        this.easing = asScrollbar.easing[this.options.easing] || asScrollbar.easing.ease;
-
-        this.init();
-      }
-
-      _createClass(asScrollbar, [{
-        key: 'init',
-        value: function init() {
-          var options = this.options;
-
-          this.$handle = this.$bar.find(this.options.handleSelector);
-
-          if (this.$handle.length === 0) {
-            this.$handle = (0, _jQuery2.default)(options.handleTemplate.replace(/\{\{handle\}\}/g, this.classes.handleClass)).appendTo(this.$bar);
-          } else {
-            this.$handle.addClass(this.classes.handleClass);
-          }
-
-          this.$bar.addClass(this.classes.barClass).addClass(this.classes.directionClass).attr('draggable', false);
-
-          if (options.skin) {
-            this.$bar.addClass(options.skin);
-          }
-
-          if (options.barLength !== null) {
-            this.setBarLength(options.barLength);
-          }
-
-          if (options.handleLength !== null) {
-            this.setHandleLength(options.handleLength);
-          }
-
-          this.updateLength();
-
-          this.bindEvents();
-        }
-      }, {
-        key: 'trigger',
-        value: function trigger(eventType) {
-          var _ref;
-
-          for (var _len = arguments.length, params = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-            params[_key - 1] = arguments[_key];
-          }
-
-          var data = (_ref = [this]).concat.apply(_ref, params);
-
-          // event
-          this.$bar.trigger(NAME$1 + '::' + eventType, data);
-
-          // callback
-          eventType = eventType.replace(/\b\w+\b/g,
-
-            function(word) {
-              return word.substring(0, 1).toUpperCase() + word.substring(1);
-            }
-          );
-          var onFunction = 'on' + eventType;
-
-          if (typeof this.options[onFunction] === 'function') {
-            var _options$onFunction;
-
-            (_options$onFunction = this.options[onFunction]).apply.apply(_options$onFunction, [this].concat(params));
-          }
-        }
-      }, {
-        key: 'is',
-        value: function is(state) {
-          return this._states[state] && this._states[state] > 0;
-        }
-      }, {
-        key: 'enter',
-        value: function enter(state) {
-          if (this._states[state] === undefined) {
-            this._states[state] = 0;
-          }
-
-          this._states[state]++;
-        }
-      }, {
-        key: 'leave',
-        value: function leave(state) {
-          this._states[state]--;
-        }
-      }, {
-        key: 'eventName',
-        value: function eventName(events) {
-          if (typeof events !== 'string' || events === '') {
-
-            return '.' + this.options.namespace;
-          }
-          events = events.split(' ');
-
-          var length = events.length;
-
-          for (var _i = 0; _i < length; _i++) {
-            events[_i] = events[_i] + '.' + this.options.namespace;
-          }
-
-          return events.join(' ');
-        }
-      }, {
-        key: 'bindEvents',
-        value: function bindEvents() {
-          var _this = this;
-
-          if (this.options.mouseDrag) {
-            this.$handle.on(this.eventName('mousedown'), _jQuery2.default.proxy(this.onDragStart, this));
-            this.$handle.on(this.eventName('dragstart selectstart'),
-
-              function() {
-                return false;
-              }
-            );
-          }
-
-          if (this.options.touchDrag && support.touch) {
-            this.$handle.on(this.eventName('touchstart'), _jQuery2.default.proxy(this.onDragStart, this));
-            this.$handle.on(this.eventName('touchcancel'), _jQuery2.default.proxy(this.onDragEnd, this));
-          }
-
-          if (this.options.pointerDrag && support.pointer) {
-            this.$handle.on(this.eventName(support.prefixPointerEvent('pointerdown')), _jQuery2.default.proxy(this.onDragStart, this));
-            this.$handle.on(this.eventName(support.prefixPointerEvent('pointercancel')), _jQuery2.default.proxy(this.onDragEnd, this));
-          }
-
-          if (this.options.clickMove) {
-            this.$bar.on(this.eventName('mousedown'), _jQuery2.default.proxy(this.onClick, this));
-          }
-
-          if (this.options.mousewheel) {
-            this.$bar.on(this.eventName('mousewheel'),
-
-              function(e, delta) {
-                var offset = _this.getHandlePosition();
-
-                if (offset <= 0 && delta > 0) {
-
-                  return true;
-                } else if (offset >= _this.barLength && delta < 0) {
-
-                  return true;
-                }
-                offset -= _this.options.mousewheelSpeed * delta;
-
-                _this.move(offset, true);
-
-                return false;
-              }
-            );
-          }
-
-          this.$bar.on(this.eventName('mouseenter'),
-
-            function() {
-              _this.$bar.addClass(_this.options.hoveringClass);
-              _this.enter('hovering');
-              _this.trigger('hover');
-            }
-          );
-
-          this.$bar.on(this.eventName('mouseleave'),
-
-            function() {
-              _this.$bar.removeClass(_this.options.hoveringClass);
-
-              if (!_this.is('hovering')) {
-
-                return;
-              }
-              _this.leave('hovering');
-              _this.trigger('hovered');
-            }
-          );
-
-          if (this.options.keyboard) {
-            (0, _jQuery2.default)(document).on(this.eventName('keydown'),
-
-              function(e) {
-                if (e.isDefaultPrevented && e.isDefaultPrevented()) {
-
-                  return;
-                }
-
-                if (!_this.is('hovering')) {
-
-                  return;
-                }
-                var activeElement = document.activeElement;
-                // go deeper if element is a webcomponent
-                while (activeElement.shadowRoot) {
-                  activeElement = activeElement.shadowRoot.activeElement;
-                }
-
-                if ((0, _jQuery2.default)(activeElement).is(':input,select,option,[contenteditable]')) {
-
-                  return;
-                }
-                var by = 0,
-                  to = null;
-
-                var down = 40,
-                  end = 35,
-                  home = 36,
-                  left = 37,
-                  pageDown = 34,
-                  pageUp = 33,
-                  right = 39,
-                  spaceBar = 32,
-                  up = 38;
-
-                var webkitDown = 63233,
-                  webkitEnd = 63275,
-                  webkitHome = 63273,
-                  webkitLeft = 63234,
-                  webkitPageDown = 63277,
-                  webkitPageUp = 63276,
-                  webkitRight = 63235,
-                  webkitUp = 63232;
-
-                switch (e.which) {
-                  case left: // left
-                  case webkitUp:
-                    by = -30;
-                    break;
-                  case up: // up
-                  case webkitDown:
-                    by = -30;
-                    break;
-                  case right: // right
-                  case webkitLeft:
-                    by = 30;
-                    break;
-                  case down: // down
-                  case webkitRight:
-                    by = 30;
-                    break;
-                  case pageUp: // page up
-                  case webkitPageUp:
-                    by = -90;
-                    break;
-                  case spaceBar: // space bar
-                  case pageDown: // page down
-                  case webkitPageDown:
-                    by = -90;
-                    break;
-                  case end: // end
-                  case webkitEnd:
-                    to = '100%';
-                    break;
-                  case home: // home
-                  case webkitHome:
-                    to = 0;
-                    break;
-                  default:
-
-                    return;
-                }
-
-                if (by || to !== null) {
-
-                  if (by) {
-                    _this.moveBy(by, true);
-                  } else if (to !== null) {
-                    _this.moveTo(to, true);
-                  }
-                  e.preventDefault();
-                }
-              }
-            );
-          }
-        }
-      }, {
-        key: 'onClick',
-        value: function onClick(event) {
-          var num = 3;
-
-          if (event.which === num) {
-
-            return;
-          }
-
-          if (event.target === this.$handle[0]) {
-
-            return;
-          }
-
-          this._drag.time = new Date().getTime();
-          this._drag.pointer = this.pointer(event);
-
-          var offset = this.$handle.offset();
-          var distance = this.distance({
-              x: offset.left,
-              y: offset.top
-            }, this._drag.pointer),
-            factor = 1;
-
-          if (distance > 0) {
-            distance -= this.handleLength;
-          } else {
-            distance = Math.abs(distance);
-            factor = -1;
-          }
-
-          if (distance > this.barLength * this.options.clickMoveStep) {
-            distance = this.barLength * this.options.clickMoveStep;
-          }
-          this.moveBy(factor * distance, true);
-        }
-      }, {
-        key: 'onDragStart',
-        value: function onDragStart(event) {
-          var _this2 = this;
-
-          var num = 3;
-
-          if (event.which === num) {
-
-            return;
-          }
-
-          // this.$bar.toggleClass(this.options.draggingClass, event.type === 'mousedown');
-          this.$bar.addClass(this.options.draggingClass);
-
-          this._drag.time = new Date().getTime();
-          this._drag.pointer = this.pointer(event);
-
-          var callback = function callback() {
-            _this2.enter('dragging');
-            _this2.trigger('drag');
-          };
-
-          if (this.options.mouseDrag) {
-            (0, _jQuery2.default)(document).on(this.eventName('mouseup'), _jQuery2.default.proxy(this.onDragEnd, this));
-
-            (0, _jQuery2.default)(document).one(this.eventName('mousemove'), _jQuery2.default.proxy(
-
-              function() {
-                (0, _jQuery2.default)(document).on(_this2.eventName('mousemove'), _jQuery2.default.proxy(_this2.onDragMove, _this2));
-
-                callback();
-              }
-              , this));
-          }
-
-          if (this.options.touchDrag && support.touch) {
-            (0, _jQuery2.default)(document).on(this.eventName('touchend'), _jQuery2.default.proxy(this.onDragEnd, this));
-
-            (0, _jQuery2.default)(document).one(this.eventName('touchmove'), _jQuery2.default.proxy(
-
-              function() {
-                (0, _jQuery2.default)(document).on(_this2.eventName('touchmove'), _jQuery2.default.proxy(_this2.onDragMove, _this2));
-
-                callback();
-              }
-              , this));
-          }
-
-          if (this.options.pointerDrag && support.pointer) {
-            (0, _jQuery2.default)(document).on(this.eventName(support.prefixPointerEvent('pointerup')), _jQuery2.default.proxy(this.onDragEnd, this));
-
-            (0, _jQuery2.default)(document).one(this.eventName(support.prefixPointerEvent('pointermove')), _jQuery2.default.proxy(
-
-              function() {
-                (0, _jQuery2.default)(document).on(_this2.eventName(support.prefixPointerEvent('pointermove')), _jQuery2.default.proxy(_this2.onDragMove, _this2));
-
-                callback();
-              }
-              , this));
-          }
-
-          (0, _jQuery2.default)(document).on(this.eventName('blur'), _jQuery2.default.proxy(this.onDragEnd, this));
-        }
-      }, {
-        key: 'onDragMove',
-        value: function onDragMove(event) {
-          var distance = this.distance(this._drag.pointer, this.pointer(event));
-
-          if (!this.is('dragging')) {
-
-            return;
-          }
-
-          event.preventDefault();
-          this.moveBy(distance, true);
-        }
-      }, {
-        key: 'onDragEnd',
-        value: function onDragEnd() {
-          (0, _jQuery2.default)(document).off(this.eventName('mousemove mouseup touchmove touchend pointermove pointerup MSPointerMove MSPointerUp blur'));
-
-          this.$bar.removeClass(this.options.draggingClass);
-          this.handlePosition = this.getHandlePosition();
-
-          if (!this.is('dragging')) {
-
-            return;
-          }
-
-          this.leave('dragging');
-          this.trigger('dragged');
-        }
-      }, {
-        key: 'pointer',
-        value: function pointer(event) {
-          var result = {
-            x: null,
-            y: null
-          };
-
-          event = event.originalEvent || event || window.event;
-
-          event = event.touches && event.touches.length ? event.touches[0] : event.changedTouches && event.changedTouches.length ? event.changedTouches[0] : event;
-
-          if (event.pageX) {
-            result.x = event.pageX;
-            result.y = event.pageY;
-          } else {
-            result.x = event.clientX;
-            result.y = event.clientY;
-          }
-
-          return result;
-        }
-      }, {
-        key: 'distance',
-        value: function distance(first, second) {
-          if (this.options.direction === 'vertical') {
-
-            return second.y - first.y;
-          }
-
-          return second.x - first.x;
-        }
-      }, {
-        key: 'setBarLength',
-        value: function setBarLength(length, update) {
-          if (typeof length !== 'undefined') {
-            this.$bar.css(this.attributes.length, length);
-          }
-
-          if (update !== false) {
-            this.updateLength();
-          }
-        }
-      }, {
-        key: 'setHandleLength',
-        value: function setHandleLength(length, update) {
-          if (typeof length !== 'undefined') {
-
-            if (length < this.options.minHandleLength) {
-              length = this.options.minHandleLength;
-            } else if (this.options.maxHandleLength && length > this.options.maxHandleLength) {
-              length = this.options.maxHandleLength;
-            }
-            this.$handle.css(this.attributes.length, length);
-
-            if (update !== false) {
-              this.updateLength(length);
-            }
-          }
-        }
-      }, {
-        key: 'updateLength',
-        value: function updateLength(length, barLength) {
-          if (typeof length !== 'undefined') {
-            this.handleLength = length;
-          } else {
-            this.handleLength = this.getHandleLenght();
-          }
-
-          if (typeof barLength !== 'undefined') {
-            this.barLength = barLength;
-          } else {
-            this.barLength = this.getBarLength();
-          }
-        }
-      }, {
-        key: 'getBarLength',
-        value: function getBarLength() {
-          return this.$bar[0][this.attributes.clientLength];
-        }
-      }, {
-        key: 'getHandleLenght',
-        value: function getHandleLenght() {
-          return this.$handle[0][this.attributes.clientLength];
-        }
-      }, {
-        key: 'getHandlePosition',
-        value: function getHandlePosition() {
-          var value = void 0;
-
-          if (this.options.useCssTransforms && support.transform) {
-            value = convertMatrixToArray(this.$handle.css(support.transform));
-
-            if (!value) {
-
-              return 0;
-            }
-
-            if (this.attributes.axis === 'X') {
-              value = value[12] || value[4];
-            } else {
-              value = value[13] || value[5];
-            }
-          } else {
-            value = this.$handle.css(this.attributes.position);
-          }
-
-          return parseFloat(value.replace('px', ''));
-        }
-      }, {
-        key: 'makeHandlePositionStyle',
-        value: function makeHandlePositionStyle(value) {
-          var property = void 0,
-            x = '0',
-            y = '0';
-
-          if (this.options.useCssTransforms && support.transform) {
-
-            if (this.attributes.axis === 'X') {
-              x = value + 'px';
-            } else {
-              y = value + 'px';
-            }
-
-            property = support.transform.toString();
-
-            if (this.options.useCssTransforms3d && support.transform3d) {
-              value = 'translate3d(' + x + ',' + y + ',0)';
-            } else {
-              value = 'translate(' + x + ',' + y + ')';
-            }
-          } else {
-            property = this.attributes.position;
-          }
-          var temp = {};
-          temp[property] = value;
-
-          return temp;
-        }
-      }, {
-        key: 'setHandlePosition',
-        value: function setHandlePosition(value) {
-          var style = this.makeHandlePositionStyle(value);
-          this.$handle.css(style);
-
-          if (!this.is('dragging')) {
-            this.handlePosition = parseFloat(value);
-          }
-        }
-      }, {
-        key: 'moveTo',
-        value: function moveTo(value, trigger, sync) {
-          var type = typeof value === 'undefined' ? 'undefined' : _typeof(value);
-
-          if (type === 'string') {
-
-            if (isPercentage(value)) {
-              value = convertPercentageToFloat(value) * (this.barLength - this.handleLength);
-            }
-
-            value = parseFloat(value);
-            type = 'number';
-          }
-
-          if (type !== 'number') {
-
-            return;
-          }
-
-          this.move(value, trigger, sync);
-        }
-      }, {
-        key: 'moveBy',
-        value: function moveBy(value, trigger, sync) {
-          var type = typeof value === 'undefined' ? 'undefined' : _typeof(value);
-
-          if (type === 'string') {
-
-            if (isPercentage(value)) {
-              value = convertPercentageToFloat(value) * (this.barLength - this.handleLength);
-            }
-
-            value = parseFloat(value);
-            type = 'number';
-          }
-
-          if (type !== 'number') {
-
-            return;
-          }
-
-          this.move(this.handlePosition + value, trigger, sync);
-        }
-      }, {
-        key: 'move',
-        value: function move(value, trigger, sync) {
-          if (typeof value !== 'number' || this.is('disabled')) {
-
-            return;
-          }
-
-          if (value < 0) {
-            value = 0;
-          } else if (value + this.handleLength > this.barLength) {
-            value = this.barLength - this.handleLength;
-          }
-
-          if (!this.is('dragging') && sync !== true) {
-            this.doMove(value, this.options.duration, this.options.easing, trigger);
-          } else {
-            this.setHandlePosition(value);
-
-            if (trigger) {
-              this.trigger('change', value / (this.barLength - this.handleLength));
-            }
-          }
-        }
-      }, {
-        key: 'doMove',
-        value: function doMove(value, duration, easing, trigger) {
-          var _this3 = this;
-
-          var property = void 0;
-          this.enter('moving');
-          duration = duration ? duration : this.options.duration;
-          easing = easing ? easing : this.options.easing;
-
-          var style = this.makeHandlePositionStyle(value);
-
-          for (property in style) {
-
-            if ({}.hasOwnProperty.call(style, property)) {
-              break;
-            }
-          }
-
-          if (this.options.useCssTransitions && support.transition) {
-            this.enter('transition');
-            this.prepareTransition(property, duration, easing);
-
-            this.$handle.one(support.transition.end,
-
-              function() {
-                _this3.$handle.css(support.transition, '');
-
-                if (trigger) {
-                  _this3.trigger('change', value / (_this3.barLength - _this3.handleLength));
-                }
-                _this3.leave('transition');
-                _this3.leave('moving');
-              }
-            );
-
-            this.setHandlePosition(value);
-          } else {
-            (function() {
-              _this3.enter('animating');
-
-              var startTime = getTime();
-              var start = _this3.getHandlePosition();
-              var end = value;
-
-              var run = function run(time) {
-                var percent = (time - startTime) / _this3.options.duration;
-
-                if (percent > 1) {
-                  percent = 1;
-                }
-
-                percent = _this3.easing.fn(percent);
-                var scale = 10;
-                var current = parseFloat(start + percent * (end - start), scale);
-                _this3.setHandlePosition(current);
-
-                if (trigger) {
-                  _this3.trigger('change', current / (_this3.barLength - _this3.handleLength));
-                }
-
-                if (percent === 1) {
-                  window.cancelAnimationFrame(_this3._frameId);
-                  _this3._frameId = null;
-
-                  _this3.leave('animating');
-                  _this3.leave('moving');
-                } else {
-                  _this3._frameId = window.requestAnimationFrame(run);
-                }
-              };
-
-              _this3._frameId = window.requestAnimationFrame(run);
-            })();
-          }
-        }
-      }, {
-        key: 'prepareTransition',
-        value: function prepareTransition(property, duration, easing, delay) {
-          var temp = [];
-
-          if (property) {
-            temp.push(property);
-          }
-
-          if (duration) {
-
-            if (_jQuery2.default.isNumeric(duration)) {
-              duration = duration + 'ms';
-            }
-            temp.push(duration);
-          }
-
-          if (easing) {
-            temp.push(easing);
-          } else {
-            temp.push(this.easing.css);
-          }
-
-          if (delay) {
-            temp.push(delay);
-          }
-          this.$handle.css(support.transition, temp.join(' '));
-        }
-      }, {
-        key: 'enable',
-        value: function enable() {
-          this._states.disabled = 0;
-
-          this.$bar.removeClass(this.options.disabledClass);
-        }
-      }, {
-        key: 'disable',
-        value: function disable() {
-          this._states.disabled = 1;
-
-          this.$bar.addClass(this.options.disabledClass);
-        }
-      }, {
-        key: 'destory',
-        value: function destory() {
-          this.$bar.on(this.eventName());
-        }
-      }], [{
-        key: '_jQueryInterface',
-        value: function _jQueryInterface(options) {
-          'use strict';
-
-          for (var _len2 = arguments.length, args = Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1; _key2 < _len2; _key2++) {
-            args[_key2 - 1] = arguments[_key2];
-          }
-
-          if (typeof options === 'string') {
-
-            return this.each(
-
-              function() {
-                var instance = (0, _jQuery2.default)(this).data(NAME$1);
-
-                if (!instance) {
-
-                  return false;
-                }
-
-                if (!_jQuery2.default.isFunction(instance[options]) || options.charAt(0) === '_') {
-
-                  return false;
-                }
-                // apply method
-
-                return instance[options].apply(instance, args);
-              }
-            );
-          }
-
-          return this.each(
-
-            function() {
-              if (!(0, _jQuery2.default)(this).data(NAME$1)) {
-                (0, _jQuery2.default)(this).data(NAME$1, new asScrollbar(options, this));
-              }
-            }
-          );
-        }
-      }]);
-
-      return asScrollbar;
-    }();
-
-    asScrollbar.support = support;
-
-    _jQuery2.default.extend(asScrollbar.easing = {}, {
-      ease: easingBezier(0.25, 0.1, 0.25, 1.0),
-      linear: easingBezier(0.00, 0.0, 1.00, 1.0),
-      'ease-in': easingBezier(0.42, 0.0, 1.00, 1.0),
-      'ease-out': easingBezier(0.00, 0.0, 0.58, 1.0),
-      'ease-in-out': easingBezier(0.42, 0.0, 0.58, 1.0)
-    });
-
-    _jQuery2.default.fn[NAME$1] = asScrollbar._jQueryInterface;
-    _jQuery2.default.fn[NAME$1].constructor = asScrollbar;
-    _jQuery2.default.fn[NAME$1].noConflict = function() {
-      'use strict';
-
-      _jQuery2.default.fn[NAME$1] = window.JQUERY_NO_CONFLICT;
-
-      return asScrollbar._jQueryInterface;
-    }
-    ;
-
-    var defaults$1 = {
+    var DEFAULTS = {
       namespace: 'asScrollable',
 
       skin: null,
@@ -1271,8 +103,7 @@
     /**
      * Helper functions
      **/
-
-    var getTime$1 = function getTime$1() {
+    var getTime = function getTime() {
       'use strict';
 
       if (typeof window.performance !== 'undefined' && window.performance.now) {
@@ -1283,7 +114,7 @@
       return Date.now();
     };
 
-    var isPercentage$1 = function isPercentage$1(n) {
+    var isPercentage = function isPercentage(n) {
       'use strict';
 
       return typeof n === 'string' && n.indexOf('%') !== -1;
@@ -1301,7 +132,7 @@
       return parseFloat(n).toFixed(4) * 100 + '%';
     };
 
-    var convertPercentageToFloat$1 = function convertPercentageToFloat$1(n) {
+    var convertPercentageToFloat = function convertPercentageToFloat(n) {
       'use strict';
 
       return parseFloat(n.slice(0, -1) / 100, 10);
@@ -1329,7 +160,7 @@
       return isOSXFF && +version > 23;
     }();
 
-    var NAME = 'asScrollable';
+    var NAME$1 = 'asScrollable';
 
     var instanceId = 0;
 
@@ -1337,8 +168,8 @@
       function asScrollable(options, element) {
         _classCallCheck(this, asScrollable);
 
-        this.$element = (0, _jQuery2.default)(element);
-        options = this.options = _jQuery2.default.extend({}, defaults$1, options || {}, this.$element.data('options') || {});
+        this.$element = (0, _jquery2.default)(element);
+        options = this.options = _jquery2.default.extend({}, DEFAULTS, options || {}, this.$element.data('options') || {});
 
         this.classes = {
           wrap: options.namespace,
@@ -1403,7 +234,7 @@
 
         this.instanceId = ++instanceId;
 
-        this.easing = asScrollbar.easing[this.options.easing] || asScrollbar.easing.ease;
+        this.easing = _jquery2.default.asScrollbar.getEasing(this.options.easing) || _jquery2.default.asScrollbar.getEasing('ease');
 
         var position = this.$element.css('position');
 
@@ -1499,25 +330,25 @@
           }
 
           this.bindEvents();
+
+          this.trigger('ready');
         }
       }, {
         key: 'bindEvents',
         value: function bindEvents() {
-          var _this4 = this;
-
-          var self = this;
+          var _this = this;
 
           if (this.options.responsive) {
-            (0, _jQuery2.default)(window).on(this.eventNameWithId('orientationchange'),
+            (0, _jquery2.default)(window).on(this.eventNameWithId('orientationchange'),
 
               function() {
-                _this4.update();
+                _this.update();
               }
             );
-            (0, _jQuery2.default)(window).on(this.eventNameWithId('resize'), this.throttle(
+            (0, _jquery2.default)(window).on(this.eventNameWithId('resize'), this.throttle(
 
               function() {
-                _this4.update();
+                _this.update();
               }
               , this.options.throttle));
           }
@@ -1527,29 +358,30 @@
             return;
           }
 
+          var that = this;
+
           this.$wrap.on(this.eventName('mouseenter'),
 
             function() {
-              _this4.$wrap.addClass(_this4.options.hoveringClass);
-              _this4.enter('hovering');
-              _this4.trigger('hover');
+              that.$wrap.addClass(_this.options.hoveringClass);
+              that.enter('hovering');
+              that.trigger('hover');
             }
           );
 
           this.$wrap.on(this.eventName('mouseleave'),
 
             function() {
-              _this4.$wrap.removeClass(_this4.options.hoveringClass);
+              that.$wrap.removeClass(_this.options.hoveringClass);
 
-              if (!_this4.is('hovering')) {
+              if (!that.is('hovering')) {
 
                 return;
               }
-              _this4.leave('hovering');
-              _this4.trigger('hovered');
+              that.leave('hovering');
+              that.trigger('hovered');
             }
           );
-          //======>>>>>self<<<<<<<=======
 
           if (this.options.showOnHover) {
 
@@ -1557,78 +389,89 @@
               this.$bar.on('asScrollbar::hover',
 
                 function() {
-                  self.showBar(this.direction);
+                  if (that.horizontal) {
+                    that.showBar('horizontal');
+                  }
+
+                  if (that.vertical) {
+                    that.showBar('vertical');
+                  }
                 }
               ).on('asScrollbar::hovered',
 
                 function() {
-                  self.hideBar(this.direction);
+                  if (that.horizontal) {
+                    that.hideBar('horizontal');
+                  }
+
+                  if (that.vertical) {
+                    that.hideBar('vertical');
+                  }
                 }
               );
             } else {
-              this.$element.on(NAME + '::hover', _jQuery2.default.proxy(this.showBar, this));
-              this.$element.on(NAME + '::hovered', _jQuery2.default.proxy(this.hideBar, this));
+              this.$element.on(NAME$1 + '::hover', _jquery2.default.proxy(this.showBar, this));
+              this.$element.on(NAME$1 + '::hovered', _jquery2.default.proxy(this.hideBar, this));
             }
           }
-          //======>>>>>end self<<<<<<<=======
 
           this.$container.on(this.eventName('scroll'),
 
             function() {
-              if (_this4.horizontal) {
-                var oldLeft = _this4.offsetLeft;
-                _this4.offsetLeft = _this4.getOffset('horizontal');
+              if (that.horizontal) {
+                var oldLeft = that.offsetLeft;
+                that.offsetLeft = that.getOffset('horizontal');
 
-                if (oldLeft !== _this4.offsetLeft) {
-                  _this4.trigger('scroll', _this4.getPercentOffset('horizontal'), 'horizontal');
+                if (oldLeft !== that.offsetLeft) {
+                  that.trigger('scroll', that.getPercentOffset('horizontal'), 'horizontal');
 
-                  if (_this4.offsetLeft === 0) {
-                    _this4.trigger('scrolltop', 'horizontal');
+                  if (that.offsetLeft === 0) {
+                    that.trigger('scrolltop', 'horizontal');
                   }
 
-                  if (_this4.offsetLeft === _this4.getScrollLength('horizontal')) {
-                    _this4.trigger('scrollend', 'horizontal');
+                  if (that.offsetLeft === that.getScrollLength('horizontal')) {
+                    that.trigger('scrollend', 'horizontal');
                   }
                 }
               }
 
-              if (_this4.vertical) {
-                var oldTop = _this4.offsetTop;
+              if (that.vertical) {
+                var oldTop = that.offsetTop;
 
-                _this4.offsetTop = _this4.getOffset('vertical');
+                that.offsetTop = that.getOffset('vertical');
 
-                if (oldTop !== _this4.offsetTop) {
-                  _this4.trigger('scroll', _this4.getPercentOffset('vertical'), 'vertical');
+                if (oldTop !== that.offsetTop) {
+                  that.trigger('scroll', that.getPercentOffset('vertical'), 'vertical');
 
-                  if (_this4.offsetTop === 0) {
-                    _this4.trigger('scrolltop', 'vertical');
+                  if (that.offsetTop === 0) {
+                    that.trigger('scrolltop', 'vertical');
                   }
 
-                  if (_this4.offsetTop === _this4.getScrollLength('vertical')) {
-                    _this4.trigger('scrollend', 'vertical');
+                  if (that.offsetTop === that.getScrollLength('vertical')) {
+                    that.trigger('scrollend', 'vertical');
                   }
                 }
               }
             }
           );
 
-          this.$element.on(NAME + '::scroll',
+          this.$element.on(NAME$1 + '::scroll',
 
             function(e, api, value, direction) {
-              if (!_this4.is('scrolling')) {
-                _this4.enter('scrolling');
-                _this4.$wrap.addClass(_this4.options.scrollingClass);
+              if (!that.is('scrolling')) {
+                that.enter('scrolling');
+                that.$wrap.addClass(that.options.scrollingClass);
               }
               var bar = api.getBarApi(direction);
 
               bar.moveTo(conventToPercentage(value), false, true);
 
-              clearTimeout(_this4._timeoutId);
-              _this4._timeoutId = setTimeout(
+              clearTimeout(that._timeoutId);
+              that._timeoutId = setTimeout(
 
                 function() {
-                  _this4.$wrap.removeClass(_this4.options.scrollingClass);
-                  _this4.leave('scrolling');
+                  that.$wrap.removeClass(that.options.scrollingClass);
+                  that.leave('scrolling');
                 }
                 , 200);
             }
@@ -1637,19 +480,21 @@
           this.$bar.on('asScrollbar::change',
 
             function(e, api, value) {
-              self.scrollTo(this.direction, conventToPercentage(value), false, true);
+              if (typeof e.target.direction === 'string') {
+                that.scrollTo(e.target.direction, conventToPercentage(value), false, true);
+              }
             }
           );
 
           this.$bar.on('asScrollbar::drag',
 
             function() {
-              _this4.$wrap.addClass(_this4.options.draggingClass);
+              that.$wrap.addClass(that.options.draggingClass);
             }
           ).on('asScrollbar::dragged',
 
             function() {
-              _this4.$wrap.removeClass(_this4.options.draggingClass);
+              that.$wrap.removeClass(that.options.draggingClass);
             }
           );
         }
@@ -1657,9 +502,9 @@
         key: 'unbindEvents',
         value: function unbindEvents() {
           this.$wrap.off(this.eventName());
-          this.$element.off(NAME + '::scroll').off(NAME + '::hover').off(NAME + '::hovered');
+          this.$element.off(NAME$1 + '::scroll').off(NAME$1 + '::hover').off(NAME$1 + '::hovered');
           this.$container.off(this.eventName());
-          (0, _jQuery2.default)(window).off(this.eventNameWithId());
+          (0, _jquery2.default)(window).off(this.eventNameWithId());
         }
       }, {
         key: 'initLayout',
@@ -1676,7 +521,7 @@
             scrollbarWidth = this.getBrowserScrollbarWidth(direction);
 
           this.$content.css(attributes.crossLength, parentLength + 'px');
-          this.$container.css(attributes.crossLength, '' + scrollbarWidth + parentLength + 'px');
+          this.$container.css(attributes.crossLength, scrollbarWidth + parentLength + 'px');
 
           if (scrollbarWidth === 0 && isFFLionScrollbar) {
             this.$container.css(attributes.ffPadding, 16);
@@ -1685,14 +530,13 @@
       }, {
         key: 'createBar',
         value: function createBar(direction) {
-          var options = _jQuery2.default.extend(this.options.scrollbar, {
+          var options = _jquery2.default.extend(this.options.scrollbar, {
             namespace: this.classes.bar,
             direction: direction,
             useCssTransitions: false,
             keyboard: false
-          //mousewheel: false
           });
-          var $bar = (0, _jQuery2.default)('<div>');
+          var $bar = (0, _jquery2.default)('<div>');
           $bar.asScrollbar(options);
 
           if (this.options.showOnHover) {
@@ -1714,14 +558,14 @@
       }, {
         key: 'trigger',
         value: function trigger(eventType) {
-          for (var _len3 = arguments.length, params = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
-            params[_key3 - 1] = arguments[_key3];
+          for (var _len = arguments.length, params = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+            params[_key - 1] = arguments[_key];
           }
 
           var data = [this].concat(params);
 
           // event
-          this.$element.trigger(NAME + '::' + eventType, data);
+          this.$element.trigger(NAME$1 + '::' + eventType, data);
 
           // callback
           eventType = eventType.replace(/\b\w+\b/g,
@@ -1766,8 +610,8 @@
           events = events.split(' ');
           var length = events.length;
 
-          for (var _i2 = 0; _i2 < length; _i2++) {
-            events[_i2] = events[_i2] + '.' + this.options.namespace;
+          for (var i = 0; i < length; i++) {
+            events[i] = events[i] + '.' + this.options.namespace;
           }
 
           return events.join(' ');
@@ -1783,8 +627,8 @@
           events = events.split(' ');
           var length = events.length;
 
-          for (var _i3 = 0; _i3 < length; _i3++) {
-            events[_i3] = events[_i3] + '.' + this.options.namespace + '-' + this.instanceId;
+          for (var i = 0; i < length; i++) {
+            events[i] = events[i] + '.' + this.options.namespace + '-' + this.instanceId;
           }
 
           return events.join(' ');
@@ -1792,35 +636,52 @@
       }, {
         key: 'throttle',
         value: function throttle(func, wait) {
+          var _this2 = this;
+
           var _now = Date.now ||
 
           function() {
             return new Date().getTime();
           };
-          var args = void 0,
-            context = void 0,
-            result = void 0;
-          var timeout = null;
+
+          var timeout = void 0;
+          var context = void 0;
+          var args = void 0;
+          var result = void 0;
           var previous = 0;
           var later = function later() {
             previous = _now();
             timeout = null;
             result = func.apply(context, args);
-            context = args = null;
+
+            if (!timeout) {
+              context = args = null;
+            }
           };
 
           return function() {
+            for (var _len2 = arguments.length, params = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+              params[_key2] = arguments[_key2];
+            }
+
+            /*eslint consistent-this: "off"*/
             var now = _now();
             var remaining = wait - (now - previous);
-            context = this;
-            args = arguments;
+            context = _this2;
+            args = params;
 
-            if (remaining <= 0) {
-              clearTimeout(timeout);
-              timeout = null;
+            if (remaining <= 0 || remaining > wait) {
+
+              if (timeout) {
+                clearTimeout(timeout);
+                timeout = null;
+              }
               previous = now;
               result = func.apply(context, args);
-              context = args = null;
+
+              if (!timeout) {
+                context = args = null;
+              }
             } else if (!timeout) {
               timeout = setTimeout(later, remaining);
             }
@@ -1884,8 +745,8 @@
 
           if (type === 'string') {
 
-            if (isPercentage$1(value)) {
-              value = convertPercentageToFloat$1(value) * this.getScrollLength(direction);
+            if (isPercentage(value)) {
+              value = convertPercentageToFloat(value) * this.getScrollLength(direction);
             }
 
             value = parseFloat(value);
@@ -1906,8 +767,8 @@
 
           if (type === 'string') {
 
-            if (isPercentage$1(value)) {
-              value = convertPercentageToFloat$1(value) * this.getScrollLength(direction);
+            if (isPercentage(value)) {
+              value = convertPercentageToFloat(value) * this.getScrollLength(direction);
             }
 
             value = parseFloat(value);
@@ -1924,7 +785,7 @@
       }, {
         key: 'move',
         value: function move(direction, value, trigger, sync) {
-          var _this5 = this;
+          var _this3 = this;
 
           if (this[direction] !== true || typeof value !== 'number') {
 
@@ -1941,52 +802,54 @@
 
           var attributes = this.attributes[direction];
 
+          var that = this;
           var callback = function callback() {
-            _this5.leave('moving');
+            that.leave('moving');
           };
 
           if (sync) {
             this.$container[0][attributes.scroll] = value;
 
             if (trigger !== false) {
-              this.trigger('change', value / this.getScrollLength(direction));
+              this.trigger('change', value / this.getScrollLength(direction), direction);
             }
             callback();
           } else {
             (function() {
-              _this5.enter('animating');
-              var startTime = getTime$1();
-              var start = _this5.getOffset(direction);
+              _this3.enter('animating');
+
+              var startTime = getTime();
+              var start = _this3.getOffset(direction);
               var end = value;
 
               var run = function run(time) {
-                var percent = (time - startTime) / _this5.options.duration;
+                var percent = (time - startTime) / that.options.duration;
 
                 if (percent > 1) {
                   percent = 1;
                 }
 
-                percent = _this5.easing.fn(percent);
+                percent = that.easing.fn(percent);
 
                 var current = parseFloat(start + percent * (end - start), 10);
-                _this5.$container[0][attributes.scroll] = current;
+                that.$container[0][attributes.scroll] = current;
 
                 if (trigger !== false) {
-                  _this5.trigger('change', value / _this5.getScrollLength(direction));
+                  that.trigger('change', value / that.getScrollLength(direction), direction);
                 }
 
                 if (percent === 1) {
-                  window.cancelAnimationFrame(_this5._frameId);
-                  _this5._frameId = null;
+                  window.cancelAnimationFrame(that._frameId);
+                  that._frameId = null;
 
-                  _this5.leave('animating');
+                  that.leave('animating');
                   callback();
                 } else {
-                  _this5._frameId = window.requestAnimationFrame(run);
+                  that._frameId = window.requestAnimationFrame(run);
                 }
               };
 
-              _this5._frameId = window.requestAnimationFrame(run);
+              _this3._frameId = window.requestAnimationFrame(run);
             })();
           }
         }
@@ -2065,6 +928,7 @@
             }
             api.setHandleLength(api.getBarLength() * containerLength / (scrollLength + containerLength), true);
           } else {
+
             api.disable();
           }
         }
@@ -2078,6 +942,8 @@
             this.unbindEvents();
             this.unStyle();
           }
+
+          this.trigger('disable');
         }
       }, {
         key: 'enable',
@@ -2089,6 +955,8 @@
             this.bindEvents();
             this.update();
           }
+
+          this.trigger('enable');
         }
       }, {
         key: 'update',
@@ -2160,89 +1028,91 @@
             this.$content.unwrap();
           }
           this.$content.removeClass(this.classes.content);
-          this.$element.data(NAME, null);
+          this.$element.data(NAME$1, null);
+          this.trigger('destory');
         }
       }], [{
-        key: '_jQueryInterface',
-        value: function _jQueryInterface(options) {
-          'use strict';
-
-          var _this6 = this;
-
-          for (var _len4 = arguments.length, params = Array(_len4 > 1 ? _len4 - 1 : 0), _key4 = 1; _key4 < _len4; _key4++) {
-            params[_key4 - 1] = arguments[_key4];
-          }
-
-          if (typeof options === 'string') {
-            var _ret4 = function() {
-              var method = options;
-
-              if (/^\_/.test(method)) {
-
-                return {
-                  v: false
-                };
-              } else if (/^(get)/.test(method)) {
-                var api = _this6.first().data(NAME);
-
-                if (api && typeof api[method] === 'function') {
-
-                  return {
-                    v: api[method].apply(api, params)
-                  };
-                }
-              } else {
-
-                return {
-                  v: _this6.each(
-
-                    function() {
-                      var api = _jQuery2.default.data(this, NAME);
-
-                      if (api && typeof api[method] === 'function') {
-                        api[method].apply(api, params);
-                      }
-                    }
-                  )
-                };
-              }
-            }();
-
-            if ((typeof _ret4 === 'undefined' ? 'undefined' : _typeof(_ret4)) === "object")
-
-              return _ret4.v;
-          } else {
-
-            return this.each(
-
-              function() {
-                if (!(0, _jQuery2.default)(this).data(NAME)) {
-                  (0, _jQuery2.default)(this).data(NAME, new asScrollable(options, this));
-                } else {
-                  (0, _jQuery2.default)(this).data(NAME).update();
-                }
-              }
-            );
-          }
-
-          return this;
+        key: 'setDefaults',
+        value: function setDefaults(options) {
+          _jquery2.default.extend(DEFAULTS, _jquery2.default.isPlainObject(options) && options);
         }
       }]);
 
       return asScrollable;
     }();
 
-    _jQuery2.default.fn[NAME] = asScrollable._jQueryInterface;
-    _jQuery2.default.fn[NAME].constructor = asScrollable;
-    _jQuery2.default.fn[NAME].noConflict = function() {
-      'use strict';
+    var info = {
+      version: '0.4.0'
+    };
 
-      _jQuery2.default.fn[NAME] = JQUERY_NO_CONFLICT;
+    var NAME = 'asScrollable';
+    var OtherAsScrollable = _jquery2.default.fn.asScrollable;
 
-      return asScrollable._jQueryInterface;
+    _jquery2.default.fn.asScrollable = function jQueryAsScrollable(options) {
+      var _this4 = this;
+
+      for (var _len3 = arguments.length, args = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
+        args[_key3 - 1] = arguments[_key3];
+      }
+
+      if (typeof options === 'string') {
+        var _ret2 = function() {
+          var method = options;
+
+          if (/^_/.test(method)) {
+
+            return {
+              v: false
+            };
+          } else if (/^(get)/.test(method)) {
+            var instance = _this4.first().data(NAME);
+
+            if (instance && typeof instance[method] === 'function') {
+
+              return {
+                v: instance[method].apply(instance, args)
+              };
+            }
+          } else {
+
+            return {
+              v: _this4.each(
+
+                function() {
+                  var instance = _jquery2.default.data(this, NAME);
+
+                  if (instance && typeof instance[method] === 'function') {
+                    instance[method].apply(instance, args);
+                  }
+                }
+              )
+            };
+          }
+        }();
+
+        if ((typeof _ret2 === 'undefined' ? 'undefined' : _typeof(_ret2)) === "object")
+
+          return _ret2.v;
+      }
+
+      return this.each(
+
+        function() {
+          if (!(0, _jquery2.default)(this).data(NAME)) {
+            (0, _jquery2.default)(this).data(NAME, new asScrollable(options, this));
+          }
+        }
+      );
     }
     ;
 
-    exports.default = asScrollable;
+    _jquery2.default.asScrollable = _jquery2.default.extend({
+      setDefaults: asScrollable.setDefaults,
+      noConflict: function noConflict() {
+        _jquery2.default.fn.asScrollable = OtherAsScrollable;
+
+        return this;
+      }
+    }, info);
   }
 );

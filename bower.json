@@ -1,7 +1,7 @@
 {
   "name": "jquery-asScrollable",
-  "version":"0.3.1",
-  "description": "a jquery plugin",
+  "version": "0.4.0",
+  "description": "A jquery plugin that make a block element scrollable.",
   "main": "dist/jquery-asScrollable.js",
   "copyright": "amazingSurge",
   "license": "LGPL-3.0",
@@ -11,7 +11,11 @@
     "bower_components",
     "test",
     "demo",
-    "libs",
+    "gulp",
+    "CONTRIBUTING.md",
+    "manifest.json",
+    "karma.conf.js",
+    "config.js",
     "package.json",
     "gulpfile.babel.js",
     "tests"
@@ -24,9 +28,7 @@
     "globals"
   ],
   "dependencies": {
-    "jquery": ">=2.1.1",
-    "jquery-wheel": "git@github.com:brandonaaron/jquery-mousewheel.git",
-    "jquery-asScrollbar": "git@github.com:amazingSurge/jquery-asScrollbar.git",
-    "holderjs": "~2.4.1"
+    "jquery": ">=2.2.0",
+    "jquery-asScrollbar": "git@github.com:amazingSurge/jquery-asScrollbar.git"
   }
 }

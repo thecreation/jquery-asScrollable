@@ -1,10 +1,9 @@
 /**
-* jQuery asScrollable
-* a jquery plugin
-* Compiled: Fri Aug 12 2016 17:20:54 GMT+0800 (CST)
-* @version v0.3.1
-* @link https://github.com/amazingSurge/jquery-asScrollable
-* @copyright LGPL-3.0
+* jQuery asScrollable v0.4.0
+* https://github.com/amazingSurge/jquery-asScrollable
+*
+* Copyright (c) amazingSurge
+* Released under the LGPL-3.0 license
 */
 .asScrollable.is-enabled {
   overflow: hidden !important;
@@ -19,6 +18,7 @@
 .is-enabled .asScrollable-container::-webkit-scrollbar {
   width: 0;
   height: 0;
+
   -webkit-appearance: none;
 }
 
@@ -50,13 +50,14 @@
           box-sizing: border-box;
   overflow: hidden;
   line-height: 0;
-     -moz-user-select: none;
-      -ms-user-select: none;
   -webkit-user-select: none;
-          user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   border-radius: 2px;
   -webkit-transition: opacity .5s;
   transition: opacity .5s;
+
   -webkit-touch-callout: none;
   user-input: disabled;
   user-focus: ignore;
@@ -137,10 +138,11 @@
 }
 
 .asScrollable.is-dragging {
-     -moz-user-select: none;
-      -ms-user-select: none;
   -webkit-user-select: none;
-          user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+
   -webkit-touch-callout: none;
   user-input: disabled;
   user-focus: ignore;
