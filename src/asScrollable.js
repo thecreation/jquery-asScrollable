@@ -8,7 +8,7 @@ import {
   isFFLionScrollbar
 } from './helpers';
 
-const NAME = 'asScrollable';
+const NAMESPACE = 'asScrollable';
 
 let instanceId = 0;
 
@@ -225,8 +225,8 @@ class asScrollable {
           }
         });
       } else {
-        this.$element.on(`${NAME}::hover`, $.proxy(this.showBar, this));
-        this.$element.on(`${NAME}::hovered`, $.proxy(this.hideBar, this));
+        this.$element.on(`${NAMESPACE}::hover`, $.proxy(this.showBar, this));
+        this.$element.on(`${NAMESPACE}::hovered`, $.proxy(this.hideBar, this));
       }
     }
 
@@ -265,7 +265,7 @@ class asScrollable {
       }
     });
 
-    this.$element.on(`${NAME}::scroll`, (e, api, value, direction) => {
+    this.$element.on(`${NAMESPACE}::scroll`, (e, api, value, direction) => {
       if (!that.is('scrolling')) {
         that.enter('scrolling');
         that.$wrap.addClass(that.options.scrollingClass);
@@ -296,7 +296,7 @@ class asScrollable {
 
   unbindEvents() {
     this.$wrap.off(this.eventName());
-    this.$element.off(`${NAME}::scroll`).off(`${NAME}::hover`).off(`${NAME}::hovered`);
+    this.$element.off(`${NAMESPACE}::scroll`).off(`${NAMESPACE}::hover`).off(`${NAMESPACE}::hovered`);
     this.$container.off(this.eventName());
     $(window).off(this.eventNameWithId());
   }
@@ -352,7 +352,7 @@ class asScrollable {
     const data = [this].concat(params);
 
     // event
-    this.$element.trigger(`${NAME}::${eventType}`, data);
+    this.$element.trigger(`${NAMESPACE}::${eventType}`, data);
 
     // callback
     eventType = eventType.replace(/\b\w+\b/g, (word) => {
@@ -756,7 +756,7 @@ class asScrollable {
       this.$content.unwrap();
     }
     this.$content.removeClass(this.classes.content);
-    this.$element.data(NAME, null);
+    this.$element.data(NAMESPACE, null);
     this.trigger('destory');
   }
 

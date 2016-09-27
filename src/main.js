@@ -2,23 +2,23 @@ import $ from 'jquery';
 import asScrollable from './asScrollable';
 import info from './info';
 
-const NAME = 'asScrollable';
+const NAMESPACE = 'asScrollable';
 const OtherAsScrollable = $.fn.asScrollable;
 
-$.fn.asScrollable = function jQueryAsScrollable(options, ...args) {
+const jQueryasScrollable = function(options, ...args) {
   if (typeof options === 'string') {
     let method = options;
 
     if (/^_/.test(method)) {
       return false;
     } else if ((/^(get)/.test(method))) {
-      let instance = this.first().data(NAME);
+      let instance = this.first().data(NAMESPACE);
       if (instance && typeof instance[method] === 'function') {
         return instance[method](...args);
       }
     } else {
       return this.each(function() {
-        let instance = $.data(this, NAME);
+        let instance = $.data(this, NAMESPACE);
         if (instance && typeof instance[method] === 'function') {
           instance[method](...args);
         }
@@ -27,16 +27,18 @@ $.fn.asScrollable = function jQueryAsScrollable(options, ...args) {
   }
 
   return this.each(function() {
-    if (!$(this).data(NAME)) {
-      $(this).data(NAME, new asScrollable(this, options));
+    if (!$(this).data(NAMESPACE)) {
+      $(this).data(NAMESPACE, new asScrollable(this, options));
     }
   });
 };
+
+$.fn.asScrollable = jQueryasScrollable;
 
 $.asScrollable = $.extend({
   setDefaults: asScrollable.setDefaults,
   noConflict: function() {
     $.fn.asScrollable = OtherAsScrollable;
-    return this;
+    return jQueryasScrollable;
   }
 }, info);

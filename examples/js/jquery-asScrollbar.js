@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollbar v0.5.2
+* jQuery asScrollbar v0.5.3
 * https://github.com/amazingSurge/jquery-asScrollbar
 *
 * Copyright (c) amazingSurge
@@ -372,7 +372,7 @@
       ;
     })(support);
 
-    var NAME$1 = 'asScrollbar';
+    var NAMESPACE$1 = 'asScrollbar';
 
     /**
      * Plugin constructor
@@ -473,7 +473,7 @@
           var data = (_ref = [this]).concat.apply(_ref, params);
 
           // event
-          this.$bar.trigger(NAME$1 + '::' + eventType, data);
+          this.$bar.trigger(NAMESPACE$1 + '::' + eventType, data);
 
           // callback
           eventType = eventType.replace(/\b\w+\b/g,
@@ -1211,50 +1211,70 @@
     }();
 
     var info = {
-      version: '0.5.2'
+      version: '0.5.3'
     };
 
-    var NAME = 'asScrollbar';
+    var NAMESPACE = 'asScrollbar';
     var OtherAsScrollbar = _jquery2.default.fn.asScrollbar;
 
-    _jquery2.default.fn.asScrollbar = function jQueryAsScrollbar(options) {
+    var jQueryAsScrollbar = function jQueryAsScrollbar(options) {
+      var _this4 = this;
+
       for (var _len3 = arguments.length, args = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
         args[_key3 - 1] = arguments[_key3];
       }
 
       if (typeof options === 'string') {
+        var _ret3 = function() {
+          var method = options;
 
-        return this.each(
+          if (/^_/.test(method)) {
 
-          function() {
-            var instance = (0, _jquery2.default)(this).data(NAME);
+            return {
+              v: false
+            };
+          } else if (/^(get)/.test(method)) {
+            var instance = _this4.first().data(NAMESPACE);
 
-            if (!instance) {
+            if (instance && typeof instance[method] === 'function') {
 
-              return false;
+              return {
+                v: instance[method].apply(instance, args)
+              };
             }
+          } else {
 
-            if (!_jquery2.default.isFunction(instance[options]) || options.charAt(0) === '_') {
+            return {
+              v: _this4.each(
 
-              return false;
-            }
-            // apply method
+                function() {
+                  var instance = _jquery2.default.data(this, NAMESPACE);
 
-            return instance[options].apply(instance, args);
+                  if (instance && typeof instance[method] === 'function') {
+                    instance[method].apply(instance, args);
+                  }
+                }
+              )
+            };
           }
-        );
+        }();
+
+        if ((typeof _ret3 === 'undefined' ? 'undefined' : _typeof(_ret3)) === "object")
+
+          return _ret3.v;
       }
 
       return this.each(
 
         function() {
-          if (!(0, _jquery2.default)(this).data(NAME)) {
-            (0, _jquery2.default)(this).data(NAME, new asScrollbar(this, options));
+          if (!(0, _jquery2.default)(this).data(NAMESPACE)) {
+            (0, _jquery2.default)(this).data(NAMESPACE, new asScrollbar(this, options));
           }
         }
       );
-    }
-    ;
+    };
+
+    _jquery2.default.fn.asScrollbar = jQueryAsScrollbar;
 
     _jquery2.default.asScrollbar = _jquery2.default.extend({
       setDefaults: asScrollbar.setDefaults,
@@ -1263,7 +1283,7 @@
       noConflict: function noConflict() {
         _jquery2.default.fn.asScrollbar = OtherAsScrollbar;
 
-        return this;
+        return jQueryAsScrollbar;
       }
     }, info);
   }

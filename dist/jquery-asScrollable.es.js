@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollable v0.4.1
+* jQuery asScrollable v0.4.2
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
@@ -87,7 +87,7 @@ let isFFLionScrollbar = (() => {
   return isOSXFF && +version > 23;
 })();
 
-const NAME$1 = 'asScrollable';
+const NAMESPACE$1 = 'asScrollable';
 
 let instanceId = 0;
 
@@ -304,8 +304,8 @@ class asScrollable {
           }
         });
       } else {
-        this.$element.on(`${NAME$1}::hover`, $.proxy(this.showBar, this));
-        this.$element.on(`${NAME$1}::hovered`, $.proxy(this.hideBar, this));
+        this.$element.on(`${NAMESPACE$1}::hover`, $.proxy(this.showBar, this));
+        this.$element.on(`${NAMESPACE$1}::hovered`, $.proxy(this.hideBar, this));
       }
     }
 
@@ -344,7 +344,7 @@ class asScrollable {
       }
     });
 
-    this.$element.on(`${NAME$1}::scroll`, (e, api, value, direction) => {
+    this.$element.on(`${NAMESPACE$1}::scroll`, (e, api, value, direction) => {
       if (!that.is('scrolling')) {
         that.enter('scrolling');
         that.$wrap.addClass(that.options.scrollingClass);
@@ -375,7 +375,7 @@ class asScrollable {
 
   unbindEvents() {
     this.$wrap.off(this.eventName());
-    this.$element.off(`${NAME$1}::scroll`).off(`${NAME$1}::hover`).off(`${NAME$1}::hovered`);
+    this.$element.off(`${NAMESPACE$1}::scroll`).off(`${NAMESPACE$1}::hover`).off(`${NAMESPACE$1}::hovered`);
     this.$container.off(this.eventName());
     $(window).off(this.eventNameWithId());
   }
@@ -431,7 +431,7 @@ class asScrollable {
     const data = [this].concat(params);
 
     // event
-    this.$element.trigger(`${NAME$1}::${eventType}`, data);
+    this.$element.trigger(`${NAMESPACE$1}::${eventType}`, data);
 
     // callback
     eventType = eventType.replace(/\b\w+\b/g, (word) => {
@@ -835,7 +835,7 @@ class asScrollable {
       this.$content.unwrap();
     }
     this.$content.removeClass(this.classes.content);
-    this.$element.data(NAME$1, null);
+    this.$element.data(NAMESPACE$1, null);
     this.trigger('destory');
   }
 
@@ -845,26 +845,26 @@ class asScrollable {
 }
 
 var info = {
-  version:'0.4.1'
+  version:'0.4.2'
 };
 
-const NAME = 'asScrollable';
+const NAMESPACE = 'asScrollable';
 const OtherAsScrollable = $.fn.asScrollable;
 
-$.fn.asScrollable = function jQueryAsScrollable(options, ...args) {
+const jQueryasScrollable = function(options, ...args) {
   if (typeof options === 'string') {
     let method = options;
 
     if (/^_/.test(method)) {
       return false;
     } else if ((/^(get)/.test(method))) {
-      let instance = this.first().data(NAME);
+      let instance = this.first().data(NAMESPACE);
       if (instance && typeof instance[method] === 'function') {
         return instance[method](...args);
       }
     } else {
       return this.each(function() {
-        let instance = $.data(this, NAME);
+        let instance = $.data(this, NAMESPACE);
         if (instance && typeof instance[method] === 'function') {
           instance[method](...args);
         }
@@ -873,16 +873,18 @@ $.fn.asScrollable = function jQueryAsScrollable(options, ...args) {
   }
 
   return this.each(function() {
-    if (!$(this).data(NAME)) {
-      $(this).data(NAME, new asScrollable(this, options));
+    if (!$(this).data(NAMESPACE)) {
+      $(this).data(NAMESPACE, new asScrollable(this, options));
     }
   });
 };
+
+$.fn.asScrollable = jQueryasScrollable;
 
 $.asScrollable = $.extend({
   setDefaults: asScrollable.setDefaults,
   noConflict: function() {
     $.fn.asScrollable = OtherAsScrollable;
-    return this;
+    return jQueryasScrollable;
   }
 }, info);

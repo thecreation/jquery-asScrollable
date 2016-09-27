@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollable v0.4.1
+* jQuery asScrollable v0.4.2
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
@@ -160,7 +160,7 @@
       return isOSXFF && +version > 23;
     }();
 
-    var NAME$1 = 'asScrollable';
+    var NAMESPACE$1 = 'asScrollable';
 
     var instanceId = 0;
 
@@ -410,8 +410,8 @@
                 }
               );
             } else {
-              this.$element.on(NAME$1 + '::hover', _jquery2.default.proxy(this.showBar, this));
-              this.$element.on(NAME$1 + '::hovered', _jquery2.default.proxy(this.hideBar, this));
+              this.$element.on(NAMESPACE$1 + '::hover', _jquery2.default.proxy(this.showBar, this));
+              this.$element.on(NAMESPACE$1 + '::hovered', _jquery2.default.proxy(this.hideBar, this));
             }
           }
 
@@ -455,7 +455,7 @@
             }
           );
 
-          this.$element.on(NAME$1 + '::scroll',
+          this.$element.on(NAMESPACE$1 + '::scroll',
 
             function(e, api, value, direction) {
               if (!that.is('scrolling')) {
@@ -502,7 +502,7 @@
         key: 'unbindEvents',
         value: function unbindEvents() {
           this.$wrap.off(this.eventName());
-          this.$element.off(NAME$1 + '::scroll').off(NAME$1 + '::hover').off(NAME$1 + '::hovered');
+          this.$element.off(NAMESPACE$1 + '::scroll').off(NAMESPACE$1 + '::hover').off(NAMESPACE$1 + '::hovered');
           this.$container.off(this.eventName());
           (0, _jquery2.default)(window).off(this.eventNameWithId());
         }
@@ -565,7 +565,7 @@
           var data = [this].concat(params);
 
           // event
-          this.$element.trigger(NAME$1 + '::' + eventType, data);
+          this.$element.trigger(NAMESPACE$1 + '::' + eventType, data);
 
           // callback
           eventType = eventType.replace(/\b\w+\b/g,
@@ -1028,7 +1028,7 @@
             this.$content.unwrap();
           }
           this.$content.removeClass(this.classes.content);
-          this.$element.data(NAME$1, null);
+          this.$element.data(NAMESPACE$1, null);
           this.trigger('destory');
         }
       }], [{
@@ -1042,13 +1042,13 @@
     }();
 
     var info = {
-      version: '0.4.1'
+      version: '0.4.2'
     };
 
-    var NAME = 'asScrollable';
+    var NAMESPACE = 'asScrollable';
     var OtherAsScrollable = _jquery2.default.fn.asScrollable;
 
-    _jquery2.default.fn.asScrollable = function jQueryAsScrollable(options) {
+    var jQueryasScrollable = function jQueryasScrollable(options) {
       var _this4 = this;
 
       for (var _len3 = arguments.length, args = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
@@ -1065,7 +1065,7 @@
               v: false
             };
           } else if (/^(get)/.test(method)) {
-            var instance = _this4.first().data(NAME);
+            var instance = _this4.first().data(NAMESPACE);
 
             if (instance && typeof instance[method] === 'function') {
 
@@ -1079,7 +1079,7 @@
               v: _this4.each(
 
                 function() {
-                  var instance = _jquery2.default.data(this, NAME);
+                  var instance = _jquery2.default.data(this, NAMESPACE);
 
                   if (instance && typeof instance[method] === 'function') {
                     instance[method].apply(instance, args);
@@ -1098,20 +1098,21 @@
       return this.each(
 
         function() {
-          if (!(0, _jquery2.default)(this).data(NAME)) {
-            (0, _jquery2.default)(this).data(NAME, new asScrollable(this, options));
+          if (!(0, _jquery2.default)(this).data(NAMESPACE)) {
+            (0, _jquery2.default)(this).data(NAMESPACE, new asScrollable(this, options));
           }
         }
       );
-    }
-    ;
+    };
+
+    _jquery2.default.fn.asScrollable = jQueryasScrollable;
 
     _jquery2.default.asScrollable = _jquery2.default.extend({
       setDefaults: asScrollable.setDefaults,
       noConflict: function noConflict() {
         _jquery2.default.fn.asScrollable = OtherAsScrollable;
 
-        return this;
+        return jQueryasScrollable;
       }
     }, info);
   }
