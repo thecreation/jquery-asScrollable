@@ -1,18 +1,12 @@
 import $ from 'jquery';
 import DEFAULTS from './defaults';
-import {
-  getTime,
-  isPercentage,
-  conventToPercentage,
-  convertPercentageToFloat,
-  isFFLionScrollbar
-} from './helpers';
+import * as util from './util';
 
 const NAMESPACE = 'asScrollable';
 
 let instanceId = 0;
 
-class asScrollable {
+class AsScrollable {
   constructor(element, options) {
     this.$element = $(element);
     options = this.options = $.extend({}, DEFAULTS, options || {}, this.$element.data('options') || {});
@@ -272,7 +266,7 @@ class asScrollable {
       }
       let bar = api.getBarApi(direction);
 
-      bar.moveTo(conventToPercentage(value), false, true);
+      bar.moveTo(util.conventToPercentage(value), false, true);
 
       clearTimeout(that._timeoutId);
       that._timeoutId = setTimeout(() => {
@@ -283,7 +277,7 @@ class asScrollable {
 
     this.$bar.on('asScrollbar::change', (e, api, value) => {
       if(typeof e.target.direction === 'string') {
-        that.scrollTo(e.target.direction, conventToPercentage(value), false, true);
+        that.scrollTo(e.target.direction, util.conventToPercentage(value), false, true);
       }
     });
 
@@ -314,9 +308,9 @@ class asScrollable {
       scrollbarWidth = this.getBrowserScrollbarWidth(direction);
 
     this.$content.css(attributes.crossLength, `${parentLength}px`);
-    this.$container.css(attributes.crossLength, scrollbarWidth + parentLength +'px');
+    this.$container.css(attributes.crossLength, `${scrollbarWidth + parentLength}px`);
 
-    if (scrollbarWidth === 0 && isFFLionScrollbar) {
+    if (scrollbarWidth === 0 && util.isFFLionScrollbar) {
       this.$container.css(attributes.ffPadding, 16);
     }
   }
@@ -505,8 +499,8 @@ class asScrollable {
     let type = typeof value;
 
     if (type === 'string') {
-      if (isPercentage(value)) {
-        value = convertPercentageToFloat(value) * this.getScrollLength(direction);
+      if (util.isPercentage(value)) {
+        value = util.convertPercentageToFloat(value) * this.getScrollLength(direction);
       }
 
       value = parseFloat(value);
@@ -524,8 +518,8 @@ class asScrollable {
     let type = typeof value;
 
     if (type === 'string') {
-      if (isPercentage(value)) {
-        value = convertPercentageToFloat(value) * this.getScrollLength(direction);
+      if (util.isPercentage(value)) {
+        value = util.convertPercentageToFloat(value) * this.getScrollLength(direction);
       }
 
       value = parseFloat(value);
@@ -569,7 +563,7 @@ class asScrollable {
     } else {
       this.enter('animating');
 
-      let startTime = getTime();
+      let startTime = util.getTime();
       let start = this.getOffset(direction);
       let end = value;
 
@@ -765,4 +759,4 @@ class asScrollable {
   }
 }
 
-export default asScrollable;
+export default AsScrollable;

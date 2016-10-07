@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollable v0.4.2
+* jQuery asScrollable v0.4.3
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
@@ -103,26 +103,21 @@
     /**
      * Helper functions
      **/
-    var getTime = function getTime() {
-      'use strict';
 
+    function getTime() {
       if (typeof window.performance !== 'undefined' && window.performance.now) {
 
         return window.performance.now();
       }
 
       return Date.now();
-    };
+    }
 
-    var isPercentage = function isPercentage(n) {
-      'use strict';
-
+    function isPercentage(n) {
       return typeof n === 'string' && n.indexOf('%') !== -1;
-    };
+    }
 
-    var conventToPercentage = function conventToPercentage(n) {
-      'use strict';
-
+    function conventToPercentage(n) {
       if (n < 0) {
         n = 0;
       } else if (n > 1) {
@@ -130,13 +125,11 @@
       }
 
       return parseFloat(n).toFixed(4) * 100 + '%';
-    };
+    }
 
-    var convertPercentageToFloat = function convertPercentageToFloat(n) {
-      'use strict';
-
+    function convertPercentageToFloat(n) {
       return parseFloat(n.slice(0, -1) / 100, 10);
-    };
+    }
 
     var isFFLionScrollbar = function() {
       'use strict';
@@ -164,9 +157,9 @@
 
     var instanceId = 0;
 
-    var asScrollable = function() {
-      function asScrollable(element, options) {
-        _classCallCheck(this, asScrollable);
+    var AsScrollable = function() {
+      function AsScrollable(element, options) {
+        _classCallCheck(this, AsScrollable);
 
         this.$element = (0, _jquery2.default)(element);
         options = this.options = _jquery2.default.extend({}, DEFAULTS, options || {}, this.$element.data('options') || {});
@@ -267,7 +260,7 @@
         this.init();
       }
 
-      _createClass(asScrollable, [{
+      _createClass(AsScrollable, [{
         key: 'init',
         value: function init() {
           switch (this.options.direction) {
@@ -1038,17 +1031,17 @@
         }
       }]);
 
-      return asScrollable;
+      return AsScrollable;
     }();
 
     var info = {
-      version: '0.4.2'
+      version: '0.4.3'
     };
 
     var NAMESPACE = 'asScrollable';
     var OtherAsScrollable = _jquery2.default.fn.asScrollable;
 
-    var jQueryasScrollable = function jQueryasScrollable(options) {
+    var jQueryAsScrollable = function jQueryAsScrollable(options) {
       var _this4 = this;
 
       for (var _len3 = arguments.length, args = Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1; _key3 < _len3; _key3++) {
@@ -1099,20 +1092,20 @@
 
         function() {
           if (!(0, _jquery2.default)(this).data(NAMESPACE)) {
-            (0, _jquery2.default)(this).data(NAMESPACE, new asScrollable(this, options));
+            (0, _jquery2.default)(this).data(NAMESPACE, new AsScrollable(this, options));
           }
         }
       );
     };
 
-    _jquery2.default.fn.asScrollable = jQueryasScrollable;
+    _jquery2.default.fn.asScrollable = jQueryAsScrollable;
 
     _jquery2.default.asScrollable = _jquery2.default.extend({
-      setDefaults: asScrollable.setDefaults,
+      setDefaults: AsScrollable.setDefaults,
       noConflict: function noConflict() {
         _jquery2.default.fn.asScrollable = OtherAsScrollable;
 
-        return jQueryasScrollable;
+        return jQueryAsScrollable;
       }
     }, info);
   }

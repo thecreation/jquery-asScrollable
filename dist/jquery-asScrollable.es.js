@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollable v0.4.2
+* jQuery asScrollable v0.4.3
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
@@ -39,37 +39,29 @@ var DEFAULTS = {
 /**
  * Helper functions
  **/
-const getTime = () => {
-  'use strict';
-
+function getTime() {
   if (typeof window.performance !== 'undefined' && window.performance.now) {
     return window.performance.now();
   }
     return Date.now();
-};
+}
 
-const isPercentage = (n) => {
-  'use strict';
-
+function isPercentage(n) {
   return typeof n === 'string' && n.indexOf('%') !== -1;
-};
+}
 
-const conventToPercentage = (n) => {
-  'use strict';
-
+function conventToPercentage(n) {
   if (n < 0) {
     n = 0;
   } else if (n > 1) {
     n = 1;
   }
   return `${parseFloat(n).toFixed(4) * 100}%`;
-};
+}
 
-const convertPercentageToFloat = (n) => {
-  'use strict';
-
+function convertPercentageToFloat(n) {
   return parseFloat(n.slice(0, -1) / 100, 10);
-};
+}
 
 let isFFLionScrollbar = (() => {
   'use strict';
@@ -91,7 +83,7 @@ const NAMESPACE$1 = 'asScrollable';
 
 let instanceId = 0;
 
-class asScrollable {
+class AsScrollable {
   constructor(element, options) {
     this.$element = $(element);
     options = this.options = $.extend({}, DEFAULTS, options || {}, this.$element.data('options') || {});
@@ -393,7 +385,7 @@ class asScrollable {
       scrollbarWidth = this.getBrowserScrollbarWidth(direction);
 
     this.$content.css(attributes.crossLength, `${parentLength}px`);
-    this.$container.css(attributes.crossLength, scrollbarWidth + parentLength +'px');
+    this.$container.css(attributes.crossLength, `${scrollbarWidth + parentLength}px`);
 
     if (scrollbarWidth === 0 && isFFLionScrollbar) {
       this.$container.css(attributes.ffPadding, 16);
@@ -845,13 +837,13 @@ class asScrollable {
 }
 
 var info = {
-  version:'0.4.2'
+  version:'0.4.3'
 };
 
 const NAMESPACE = 'asScrollable';
 const OtherAsScrollable = $.fn.asScrollable;
 
-const jQueryasScrollable = function(options, ...args) {
+const jQueryAsScrollable = function(options, ...args) {
   if (typeof options === 'string') {
     let method = options;
 
@@ -874,17 +866,17 @@ const jQueryasScrollable = function(options, ...args) {
 
   return this.each(function() {
     if (!$(this).data(NAMESPACE)) {
-      $(this).data(NAMESPACE, new asScrollable(this, options));
+      $(this).data(NAMESPACE, new AsScrollable(this, options));
     }
   });
 };
 
-$.fn.asScrollable = jQueryasScrollable;
+$.fn.asScrollable = jQueryAsScrollable;
 
 $.asScrollable = $.extend({
-  setDefaults: asScrollable.setDefaults,
+  setDefaults: AsScrollable.setDefaults,
   noConflict: function() {
     $.fn.asScrollable = OtherAsScrollable;
-    return jQueryasScrollable;
+    return jQueryAsScrollable;
   }
 }, info);

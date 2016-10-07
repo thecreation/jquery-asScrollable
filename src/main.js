@@ -1,11 +1,11 @@
 import $ from 'jquery';
-import asScrollable from './asScrollable';
+import AsScrollable from './asScrollable';
 import info from './info';
 
 const NAMESPACE = 'asScrollable';
 const OtherAsScrollable = $.fn.asScrollable;
 
-const jQueryasScrollable = function(options, ...args) {
+const jQueryAsScrollable = function(options, ...args) {
   if (typeof options === 'string') {
     let method = options;
 
@@ -28,17 +28,17 @@ const jQueryasScrollable = function(options, ...args) {
 
   return this.each(function() {
     if (!$(this).data(NAMESPACE)) {
-      $(this).data(NAMESPACE, new asScrollable(this, options));
+      $(this).data(NAMESPACE, new AsScrollable(this, options));
     }
   });
 };
 
-$.fn.asScrollable = jQueryasScrollable;
+$.fn.asScrollable = jQueryAsScrollable;
 
 $.asScrollable = $.extend({
-  setDefaults: asScrollable.setDefaults,
+  setDefaults: AsScrollable.setDefaults,
   noConflict: function() {
     $.fn.asScrollable = OtherAsScrollable;
-    return jQueryasScrollable;
+    return jQueryAsScrollable;
   }
 }, info);
