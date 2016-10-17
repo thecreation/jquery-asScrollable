@@ -198,7 +198,10 @@
         $('.simple').asScrollable('scrollBy', 'vertical', to);
       });
       $('.api-init').on('click', function() {
-        $('.simple').asScrollable();
+        $('.simple').asScrollable({
+          contentSelector: ">",
+          containerSelector: ">"
+        });
       });
       $('.api-enable').on('click', function() {
         $('.simple').asScrollable('enable');

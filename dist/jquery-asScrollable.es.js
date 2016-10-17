@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollable v0.4.4
+* jQuery asScrollable v0.4.5
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
@@ -150,7 +150,12 @@ class AsScrollable {
 
     this.easing = $.asScrollbar.getEasing(this.options.easing) || $.asScrollbar.getEasing('ease');
 
+    this.init();
+  }
+
+  init() {
     let position = this.$element.css('position');
+
     if (this.options.containerSelector) {
       this.$container = this.$element.find(this.options.containerSelector);
       this.$wrap = this.$element;
@@ -177,10 +182,6 @@ class AsScrollable {
       this.$container = this.$content.parent();
     }
 
-    this.init();
-  }
-
-  init() {
     switch (this.options.direction) {
       case 'vertical': {
         this.vertical = true;
@@ -473,7 +474,7 @@ class AsScrollable {
 
   eventNameWithId(events) {
     if (typeof events !== 'string' || events === '') {
-      return `${this.options.namespace}-${this.instanceId}`;
+      return `.${this.options.namespace}-${this.instanceId}`;
     }
 
     events = events.split(' ');
@@ -834,7 +835,7 @@ class AsScrollable {
 }
 
 var info = {
-  version:'0.4.4'
+  version:'0.4.5'
 };
 
 const NAMESPACE = 'asScrollable';

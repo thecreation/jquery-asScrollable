@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollable v0.4.4
+* jQuery asScrollable v0.4.5
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
@@ -225,40 +225,40 @@
 
         this.easing = _jquery2.default.asScrollbar.getEasing(this.options.easing) || _jquery2.default.asScrollbar.getEasing('ease');
 
-        var position = this.$element.css('position');
-
-        if (this.options.containerSelector) {
-          this.$container = this.$element.find(this.options.containerSelector);
-          this.$wrap = this.$element;
-
-          if (position === 'static') {
-            this.$wrap.css('position', 'relative');
-          }
-        } else {
-          this.$container = this.$element.wrap('<div>');
-          this.$wrap = this.$container.parent();
-          this.$wrap.height(this.$element.height());
-
-          if (position !== 'static') {
-            this.$wrap.css('position', position);
-          } else {
-            this.$wrap.css('position', 'relative');
-          }
-        }
-
-        if (this.options.contentSelector) {
-          this.$content = this.$container.find(this.options.contentSelector);
-        } else {
-          this.$content = this.$container.wrap('<div>');
-          this.$container = this.$content.parent();
-        }
-
         this.init();
       }
 
       _createClass(AsScrollable, [{
         key: 'init',
         value: function init() {
+          var position = this.$element.css('position');
+
+          if (this.options.containerSelector) {
+            this.$container = this.$element.find(this.options.containerSelector);
+            this.$wrap = this.$element;
+
+            if (position === 'static') {
+              this.$wrap.css('position', 'relative');
+            }
+          } else {
+            this.$container = this.$element.wrap('<div>');
+            this.$wrap = this.$container.parent();
+            this.$wrap.height(this.$element.height());
+
+            if (position !== 'static') {
+              this.$wrap.css('position', position);
+            } else {
+              this.$wrap.css('position', 'relative');
+            }
+          }
+
+          if (this.options.contentSelector) {
+            this.$content = this.$container.find(this.options.contentSelector);
+          } else {
+            this.$content = this.$container.wrap('<div>');
+            this.$container = this.$content.parent();
+          }
+
           switch (this.options.direction) {
             case 'vertical': {
               this.vertical = true;
@@ -610,7 +610,7 @@
         value: function eventNameWithId(events) {
           if (typeof events !== 'string' || events === '') {
 
-            return this.options.namespace + '-' + this.instanceId;
+            return '.' + this.options.namespace + '-' + this.instanceId;
           }
 
           events = events.split(' ');
@@ -1031,7 +1031,7 @@
     }();
 
     var info = {
-      version: '0.4.4'
+      version: '0.4.5'
     };
 
     var NAMESPACE = 'asScrollable';
