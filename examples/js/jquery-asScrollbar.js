@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollbar v0.5.3
+* jQuery asScrollbar v0.5.4
 * https://github.com/amazingSurge/jquery-asScrollbar
 *
 * Copyright (c) amazingSurge
@@ -215,40 +215,31 @@
       })();
     }
 
-    /**
-     * Helper functions
-     **/
-    var isPercentage = function isPercentage(n) {
-      'use strict';
-
+    function isPercentage(n) {
       return typeof n === 'string' && n.indexOf('%') !== -1;
-    };
+    }
 
-    var convertPercentageToFloat = function convertPercentageToFloat(n) {
-      'use strict';
-
+    function convertPercentageToFloat(n) {
       return parseFloat(n.slice(0, -1) / 100, 10);
-    };
+    }
 
-    var convertMatrixToArray = function convertMatrixToArray(value) {
-      'use strict';
-
+    function convertMatrixToArray(value) {
       if (value && value.substr(0, 6) === 'matrix') {
 
         return value.replace(/^.*\((.*)\)$/g, '$1').replace(/px/g, '').split(/, +/);
       }
 
       return false;
-    };
+    }
 
-    var getTime = function getTime() {
+    function getTime() {
       if (typeof window.performance !== 'undefined' && window.performance.now) {
 
         return window.performance.now();
       }
 
       return Date.now();
-    };
+    }
 
     /**
      * Css features detect
@@ -379,11 +370,13 @@
      **/
 
     var asScrollbar = function() {
-      function asScrollbar(bar, options) {
+      function asScrollbar(bar) {
+        var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
         _classCallCheck(this, asScrollbar);
 
         this.$bar = (0, _jquery2.default)(bar);
-        options = this.options = _jquery2.default.extend({}, DEFAULTS, options || {}, this.$bar.data('options') || {});
+        options = this.options = _jquery2.default.extend({}, DEFAULTS, options, this.$bar.data('options') || {});
         bar.direction = this.options.direction;
 
         this.classes = {
@@ -464,13 +457,11 @@
       }, {
         key: 'trigger',
         value: function trigger(eventType) {
-          var _ref;
-
           for (var _len = arguments.length, params = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
             params[_key - 1] = arguments[_key];
           }
 
-          var data = (_ref = [this]).concat.apply(_ref, params);
+          var data = [this].concat(params);
 
           // event
           this.$bar.trigger(NAMESPACE$1 + '::' + eventType, data);
@@ -485,9 +476,7 @@
           var onFunction = 'on' + eventType;
 
           if (typeof this.options[onFunction] === 'function') {
-            var _options$onFunction;
-
-            (_options$onFunction = this.options[onFunction]).apply.apply(_options$onFunction, [this].concat(params));
+            this.options[onFunction].apply(this, params);
           }
         }
       }, {
@@ -1173,8 +1162,8 @@
           this.trigger('disable');
         }
       }, {
-        key: 'destory',
-        value: function destory() {
+        key: 'destroy',
+        value: function destroy() {
           this.$handle.removeClass(this.classes.handleClass);
           this.$bar.removeClass(this.classes.barClass).removeClass(this.classes.directionClass).attr('draggable', null);
 
@@ -1184,7 +1173,7 @@
           this.$bar.off(this.eventName());
           this.$handle.off(this.eventName());
 
-          this.trigger('destory');
+          this.trigger('destroy');
         }
       }], [{
         key: 'registerEasing',
@@ -1211,7 +1200,7 @@
     }();
 
     var info = {
-      version: '0.5.3'
+      version: '0.5.4'
     };
 
     var NAMESPACE = 'asScrollbar';

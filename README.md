@@ -46,6 +46,11 @@ bower install jquery-asScrollable --save
 npm install jquery-asScrollable --save
 ```
 
+#### Install From Yarn
+```sh
+yarn add jquery-asScrollable
+```
+
 #### Build From Source
 If you want build from source:
 
@@ -155,11 +160,11 @@ You can also save the instances to variable for further use.
 
 ```javascript
 // call directly
-$().asScrollable('destory');
+$().asScrollable('destroy');
 
 // or
 var api = $().data('asScrollable');
-api.destory();
+api.destroy();
 ```
 
 #### scrollTo(direction, position)
@@ -213,8 +218,8 @@ $('.the-element').on('asScrollable::ready', function (e) {
 Event   | Description
 ------- | -----------
 ready   | Fires when the instance is ready for API use.
-enable  | This event is fired immediately when the `enable` instance method has been called.
-disable | This event is fired immediately when the `disable` instance method has been called.
+enable  | Fired when the `enable` instance method has been called.
+disable | Fired when the `disable` instance method has been called.
 destroy | Fires when an instance is destroyed. 
 
 ## No conflict

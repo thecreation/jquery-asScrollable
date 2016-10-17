@@ -727,7 +727,7 @@ class AsScrollable {
     }
   }
 
-  destory() {
+  destroy() {
     this.$wrap.removeClass(`${this.classes.wrap}-vertical`)
       .removeClass(`${this.classes.wrap}-horizontal`)
       .removeClass(this.classes.wrap)
@@ -751,7 +751,7 @@ class AsScrollable {
     }
     this.$content.removeClass(this.classes.content);
     this.$element.data(NAMESPACE, null);
-    this.trigger('destory');
+    this.trigger('destroy');
   }
 
   static setDefaults(options) {

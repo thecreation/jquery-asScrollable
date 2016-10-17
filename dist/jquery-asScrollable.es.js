@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollable v0.4.3
+* jQuery asScrollable v0.4.4
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
@@ -36,9 +36,6 @@ var DEFAULTS = {
   scrollbar: {}
 };
 
-/**
- * Helper functions
- **/
 function getTime() {
   if (typeof window.performance !== 'undefined' && window.performance.now) {
     return window.performance.now();
@@ -804,7 +801,7 @@ class AsScrollable {
     }
   }
 
-  destory() {
+  destroy() {
     this.$wrap.removeClass(`${this.classes.wrap}-vertical`)
       .removeClass(`${this.classes.wrap}-horizontal`)
       .removeClass(this.classes.wrap)
@@ -828,7 +825,7 @@ class AsScrollable {
     }
     this.$content.removeClass(this.classes.content);
     this.$element.data(NAMESPACE$1, null);
-    this.trigger('destory');
+    this.trigger('destroy');
   }
 
   static setDefaults(options) {
@@ -837,7 +834,7 @@ class AsScrollable {
 }
 
 var info = {
-  version:'0.4.3'
+  version:'0.4.4'
 };
 
 const NAMESPACE = 'asScrollable';
