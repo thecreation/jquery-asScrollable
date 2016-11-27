@@ -1,11 +1,13 @@
 /**
-* jQuery asScrollable v0.4.5
+* jQuery asScrollable v0.4.6
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
 * Released under the LGPL-3.0 license
 */
-(function(global, factory) {
+(
+
+  function(global, factory) {
   if (typeof define === "function" && define.amd) {
     define(['jquery'], factory);
   } else if (typeof exports !== "undefined") {
@@ -17,7 +19,8 @@
     factory(global.jQuery);
     global.jqueryAsScrollableEs = mod.exports;
   }
-})(this,
+}
+)(this,
 
   function(_jquery) {
     'use strict';
@@ -38,7 +41,7 @@
       :
 
       function(obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
       };
 
     function _classCallCheck(instance, Constructor) {
@@ -804,7 +807,9 @@
             }
             callback();
           } else {
-            (function() {
+            (
+
+              function() {
               _this3.enter('animating');
 
               var startTime = getTime();
@@ -839,7 +844,8 @@
               };
 
               _this3._frameId = window.requestAnimationFrame(run);
-            })();
+            }
+            )();
           }
         }
       }, {
@@ -955,14 +961,17 @@
             return;
           }
 
-          if (this.vertical) {
-            this.initLayout('vertical');
-            this.updateBarHandle('vertical');
-          }
+          if (this.$element.is(':visible')) {
 
-          if (this.horizontal) {
-            this.initLayout('horizontal');
-            this.updateBarHandle('horizontal');
+            if (this.vertical) {
+              this.initLayout('vertical');
+              this.updateBarHandle('vertical');
+            }
+
+            if (this.horizontal) {
+              this.initLayout('horizontal');
+              this.updateBarHandle('horizontal');
+            }
           }
         }
       }, {
@@ -1031,7 +1040,7 @@
     }();
 
     var info = {
-      version: '0.4.5'
+      version: '0.4.6'
     };
 
     var NAMESPACE = 'asScrollable';

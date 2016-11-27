@@ -691,13 +691,15 @@ class AsScrollable {
     if (this.is('disabled')) {
       return;
     }
-    if (this.vertical) {
-      this.initLayout('vertical');
-      this.updateBarHandle('vertical');
-    }
-    if (this.horizontal) {
-      this.initLayout('horizontal');
-      this.updateBarHandle('horizontal');
+    if(this.$element.is(':visible')) {
+      if (this.vertical) {
+        this.initLayout('vertical');
+        this.updateBarHandle('vertical');
+      }
+      if (this.horizontal) {
+        this.initLayout('horizontal');
+        this.updateBarHandle('horizontal');
+      }
     }
   }
 

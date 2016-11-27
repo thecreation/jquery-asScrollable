@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollable v0.4.5
+* jQuery asScrollable v0.4.6
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
@@ -765,13 +765,15 @@ class AsScrollable {
     if (this.is('disabled')) {
       return;
     }
-    if (this.vertical) {
-      this.initLayout('vertical');
-      this.updateBarHandle('vertical');
-    }
-    if (this.horizontal) {
-      this.initLayout('horizontal');
-      this.updateBarHandle('horizontal');
+    if(this.$element.is(':visible')) {
+      if (this.vertical) {
+        this.initLayout('vertical');
+        this.updateBarHandle('vertical');
+      }
+      if (this.horizontal) {
+        this.initLayout('horizontal');
+        this.updateBarHandle('horizontal');
+      }
     }
   }
 
@@ -835,7 +837,7 @@ class AsScrollable {
 }
 
 var info = {
-  version:'0.4.5'
+  version:'0.4.6'
 };
 
 const NAMESPACE = 'asScrollable';
