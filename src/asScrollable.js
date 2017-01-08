@@ -375,14 +375,17 @@ class AsScrollable {
       this._states[state] = 0;
     }
 
-    this._states[state]++;
+    // this._states[state]++;
+    this._states[state] = 1;
   }
 
   /**
    * Leaves a state.
    */
   leave(state) {
-    this._states[state]--;
+    // this._states[state]--;
+
+    this._states[state] = -1;
   }
 
   eventName(events) {

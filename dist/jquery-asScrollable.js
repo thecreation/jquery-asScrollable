@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollable v0.4.6
+* jQuery asScrollable v0.4.7
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
@@ -584,12 +584,15 @@
             this._states[state] = 0;
           }
 
-          this._states[state]++;
+          // this._states[state]++;
+          this._states[state] = 1;
         }
       }, {
         key: 'leave',
         value: function leave(state) {
-          this._states[state]--;
+          // this._states[state]--;
+
+          this._states[state] = -1;
         }
       }, {
         key: 'eventName',
@@ -1040,7 +1043,7 @@
     }();
 
     var info = {
-      version: '0.4.6'
+      version: '0.4.7'
     };
 
     var NAMESPACE = 'asScrollable';
