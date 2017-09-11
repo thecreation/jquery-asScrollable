@@ -2,7 +2,7 @@
   "name": "jquery-asScrollable",
   "title": "jQuery asScrollable",
   "description": "A jquery plugin that make a block element scrollable.",
-  "version": "0.4.7",
+  "version": "0.4.8",
   "homepage": "https://github.com/amazingSurge/jquery-asScrollable",
   "author": {
     "name": "amazingSurge",
@@ -31,6 +31,7 @@
   ],
   "license": "LGPL-3.0",
   "main": "dist/jquery-asScrollable.js",
+  "module": "dist/jquery-asScrollable.es.js",
   "files": [
     "dist",
     "src"
@@ -45,7 +46,7 @@
     "test": "gulp test"
   },
   "devDependencies": {
-    "argv": "*",
+    "yargs": "*",
     "assets-manager": "*",
     "babel-core": "*",
     "babel-eslint": "*",
@@ -57,14 +58,14 @@
     "browser-sync": "*",
     "chai": "*",
     "del": "*",
-    "esformatter": "*",
+    "prettier": "*",
+    "gulp-nf-prettier": "*",
     "graceful-fs": "*",
     "gulp": "github:gulpjs/gulp#4.0",
     "gulp-autoprefixer": "*",
     "gulp-babel": "*",
     "gulp-changed": "*",
     "gulp-csscomb": "*",
-    "gulp-csslint": "*",
     "gulp-cssnano": "*",
     "gulp-eslint": "*",
     "gulp-extname": "*",
@@ -72,7 +73,6 @@
     "gulp-header": "*",
     "gulp-iconfont-css": "*",
     "gulp-if": "*",
-    "gulp-jshint": "*",
     "gulp-notify": "*",
     "gulp-plumber": "*",
     "gulp-rename": "*",
@@ -80,7 +80,6 @@
     "gulp-rollup": "*",
     "gulp-sass": "*",
     "gulp-sass-unicode": "*",
-    "gulp-scss-lint": "*",
     "gulp-size": "*",
     "gulp-sourcemaps": "*",
     "gulp-stylelint": "*",
@@ -89,7 +88,7 @@
     "gulp-zip": "*",
     "holderjs": "^2.9.4",
     "inquirer": "*",
-    "jshint": "*",
+    "semver": "*",
     "karma": "*",
     "karma-babel-preprocessor": "*",
     "karma-chrome-launcher": "*",
@@ -105,7 +104,7 @@
     "mkdirp": "*",
     "mocha": "*",
     "node-notifier": "*",
-    "normalize.css": "^4.2.0",
+    "normalize.css": "^7.0.0",
     "path-exists": "*",
     "phantomjs-prebuilt": "*",
     "release-it": "*",
@@ -123,6 +122,6 @@
   },
   "dependencies": {
     "jquery": ">=2.2.0",
-    "jquery-asScrollbar": "^0.5.4"
+    "jquery-asScrollbar": "^0.5.6"
   }
 }
