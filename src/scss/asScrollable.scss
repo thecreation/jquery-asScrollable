@@ -1,12 +1,12 @@
-$scrollable: asScrollable;
-$scrollable-bar-size: 4px;
-$scrollable-bar-dragging-size: 10px;
-$scrollable-bar-dragging-color: rgba(238, 238, 238, .6);
-$scrollable-bar-hovering-color: rgba(238, 238, 238, .4);
-$scrollable-bar-handle-offset: 5px;
-$scrollable-bar-handle-color: rgba(224, 224, 224, .6);
-$scrollable-bar-handle-hovering-color: rgba(150, 150, 150, .6);
-$scrollable-bar-handle-dragging-color: rgba(150, 150, 150, .8);
+$scrollable: asScrollable !default;
+$scrollable-bar-size: 4px !default;
+$scrollable-bar-dragging-size: 10px !default;
+$scrollable-bar-dragging-color: rgba(238, 238, 238, .6) !default;
+$scrollable-bar-hovering-color: rgba(238, 238, 238, .4) !default;
+$scrollable-bar-handle-offset: 5px !default;
+$scrollable-bar-handle-color: rgba(224, 224, 224, .6) !default;
+$scrollable-bar-handle-hovering-color: rgba(150, 150, 150, .6) !default;
+$scrollable-bar-handle-dragging-color: rgba(150, 150, 150, .8) !default;
 
 .#{$scrollable} {
   &.is-enabled {
