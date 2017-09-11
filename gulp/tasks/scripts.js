@@ -28,7 +28,7 @@ export function bundler(src = config.scripts.src, dest = config.scripts.dest, in
       .pipe(plumber({errorHandler: handleErrors}))
       .pipe(rollup({
         input: `${src}/${input}`,
-        format: 'iife',
+        format: 'es',
         globals: {
           jquery: 'jQuery'
         }
@@ -71,15 +71,15 @@ export function scripts(src = config.scripts.src, dest = config.scripts.dest, in
       }))
       .pipe(header(config.banner))
       .pipe(
-      prettier({
-        parser: 'flow',
-        tabWidth: 2,
-        useTabs: false,
-        semi: true,
-        singleQuote: true,
-        bracketSpacing: true,
-      })
-    )
+        prettier({
+          parser: 'flow',
+          tabWidth: 2,
+          useTabs: false,
+          semi: true,
+          singleQuote: true,
+          bracketSpacing: true,
+        })
+      )
       .pipe(rename({
         basename: config.name
       }))

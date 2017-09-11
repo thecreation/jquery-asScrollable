@@ -1,14 +1,11 @@
 /**
-* jQuery asScrollable v0.4.8
+* jQuery asScrollable v0.4.9
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
 * Released under the LGPL-3.0 license
 */
-(function ($) {
-'use strict';
-
-$ = $ && $.hasOwnProperty('default') ? $['default'] : $;
+import $ from 'jquery';
 
 var DEFAULTS = {
   namespace: 'asScrollable',
@@ -843,7 +840,7 @@ class AsScrollable {
 }
 
 var info = {
-  version:'0.4.8'
+  version:'0.4.9'
 };
 
 const NAMESPACE = 'asScrollable';
@@ -886,5 +883,3 @@ $.asScrollable = $.extend({
     return jQueryAsScrollable;
   }
 }, info);
-
-}(jQuery));
