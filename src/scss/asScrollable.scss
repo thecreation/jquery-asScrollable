@@ -95,7 +95,7 @@ $scrollable-bar-handle-dragging-color: rgba(150, 150, 150, .8) !default;
       line-height: 0;
       cursor: pointer;
       background: $scrollable-bar-handle-color;
-      border-radius: $scrollable-bar-size / 2px;
+      border-radius: $scrollable-bar-size / 2;
       transition: width, height .5s;
     }
 
@@ -107,7 +107,7 @@ $scrollable-bar-handle-dragging-color: rgba(150, 150, 150, .8) !default;
     &.is-hovering {
       border-radius: $scrollable-bar-dragging-size / 2;
       .#{$scrollable}-bar-handle {
-        border-radius: $scrollable-bar-dragging-size / 2px;
+        border-radius: $scrollable-bar-dragging-size / 2;
       }
     }
 

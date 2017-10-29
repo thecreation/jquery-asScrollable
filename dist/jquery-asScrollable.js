@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollable v0.4.9
+* jQuery asScrollable v0.4.10
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
@@ -1094,7 +1094,7 @@
   })();
 
   var info = {
-    version: '0.4.9'
+    version: '0.4.10'
   };
 
   var NAMESPACE = 'asScrollable';

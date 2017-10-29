@@ -1,5 +1,5 @@
 /**
-* jQuery asScrollable v0.4.9
+* jQuery asScrollable v0.4.10
 * https://github.com/amazingSurge/jquery-asScrollable
 *
 * Copyright (c) amazingSurge
@@ -87,7 +87,7 @@
   line-height: 0;
   cursor: pointer;
   background: rgba(224, 224, 224, .6);
-  border-radius: 2;
+  border-radius: 2px;
   -webkit-transition: width, height .5s;
   transition: width, height .5s;
 }
@@ -98,7 +98,7 @@
   border-radius: 5px;
 }
 .asScrollable-bar.is-dragging .asScrollable-bar-handle, .asScrollable-bar.is-hovering .asScrollable-bar-handle {
-  border-radius: 5;
+  border-radius: 5px;
 }
 .asScrollable-bar-vertical {
   width: 4px;
